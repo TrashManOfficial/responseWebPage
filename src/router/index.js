@@ -5,6 +5,7 @@ import store from "../store"
 const AuthLayout = () => import('../layouts/AuthLayout.vue')
 const Login = () => import('../views/auth/Login.vue')
 const Register = () => import('../views/auth/Register.vue')
+const BlankLayout = () => import('../layouts/BlankLayout.vue')
 
 const AppLayout = () => import('../layouts/AppLayout.vue')
 const User = () => import('../views/user/User.vue')
@@ -12,25 +13,39 @@ const DetailUser = () => import('../views/user/DetailUser.vue')
 
 const NotFound = () => import('../views/NotFound.vue')
 
+const Home = () => import('../views/Home.vue')
+const Detail = () => import('../views/Detail.vue')
+
+
 
 const routes = [
   {
+    path: '/test',
+    name: 'test',
+    // component: Test
+  },
+  {
     path: '/',
-    redirect: '/login',
-    component: AuthLayout,
+    redirect: '/home',
+    component: BlankLayout,
     meta: { isGuest: true },
     children: [
       {
-        path: '/login',
-        name: 'login',
-        component: Login
+        path: '/home',
+        name: 'Home',
+        component: Home
       },
-      {
-        path: '/register',
-        name: 'register',
-        component: Register
-      },
+      // {
+      //   path: '/register',
+      //   name: 'register',
+      //   component: Register
+      // },
     ]
+  },
+  {
+    path: '/detail',
+    name: 'detail',
+    component: Detail
   },
   {
     path: '/users',
