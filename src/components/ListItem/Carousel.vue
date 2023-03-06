@@ -56,43 +56,42 @@ const switchImg = (flag) => {
           <span
             class="absolute top-1/2 left-1/2 text-2xl font-semibold text-white -translate-x-1/2 -translate-y-1/2 sm:text-3xl dark:text-gray-800">First
             Slide</span>
-          <img :src="item.src" class="block absolute top-1/2 left-1/2 w-full -translate-x-1/2 -translate-y-1/2" alt="">
+          <img :src="item.metaInfo.thumbnails[0]"
+            class="block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" alt="">
+          <div
+            class="flex absolute bottom-0 left-1/2 z-30 space-x-3 -translate-x-1/2 bg-black w-full h-11 opacityLinear text-2xl text-white justify-center items-center rounded-b-lg">
+            {{ item.title }}</div>
         </div>
       </div>
       <!-- Slider indicators -->
-      <!-- <div class="flex absolute bottom-5 left-1/2 z-30 space-x-3 -translate-x-1/2">
-          <button v-for="(item, index) in props.list" type="button"
-            :class="`w-3 h-3 rounded-full ${index === currentVisibleImg ? 'bg-white' : 'bg-slate-600'}`"
-            @click="selectImg(index)"></button>
-        </div> -->
-      <div class="flex absolute bottom-0 left-1/2 z-30 space-x-3 -translate-x-1/2 bg-black w-full h-11 opacityLinear text-2xl text-white justify-center items-center rounded-b-lg">
-        {{'text'}}
-      </div>
+      <!-- <div class="flex absolute bottom-8 left-1/2 z-30 space-x-3 -translate-x-1/2">
+        <button v-for="(item, index) in props.list" type="button"
+          :class="`w-3 h-3 rounded-full ${index === currentVisibleImg ? 'bg-white' : 'bg-slate-600'}`"
+          @click="selectImg(index)"></button>
+      </div> -->
       <!-- Slider controls -->
-      <button type="button"
-        class="flex absolute top-0 left-0 z-30 justify-center items-center px-4 h-full cursor-pointer group focus:outline-none"
-        @click="switchImg(0)">
-        <span
-          class="inline-flex justify-center items-center w-8 h-8 rounded-full sm:w-10 sm:h-10 bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-          <svg class="w-5 h-5 text-white sm:w-6 sm:h-6 dark:text-gray-800" fill="none" stroke="currentColor"
+      <div
+        class="flex absolute top-0 left-0 z-0 justify-center items-center px-4 h-full cursor-pointer group focus:outline-none">
+        <span @click="switchImg(0)"
+          class="inline-flex justify-center items-center w-8 h-8 rounded-full bg-gray-800/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+          <svg class="w-5 h-5 text-gray-800 sm:w-6 sm:h-6 dark:text-gray-800" fill="none" stroke="currentColor"
             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
           </svg>
           <span class="hidden">Previous</span>
         </span>
-      </button>
-      <button type="button"
-        class="flex absolute top-0 right-0 z-30 justify-center items-center px-4 h-full cursor-pointer group focus:outline-none"
-        @click="switchImg(1)">
-        <span
-          class="inline-flex justify-center items-center w-8 h-8 rounded-full sm:w-10 sm:h-10 bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-          <svg class="w-5 h-5 text-white sm:w-6 sm:h-6 dark:text-gray-800" fill="none" stroke="currentColor"
+      </div>
+      <div
+        class="flex absolute top-0 right-0 z-0 justify-center items-center px-4 h-full cursor-pointer group focus:outline-none">
+        <span @click="switchImg(1)"
+          class="inline-flex justify-center items-center w-8 h-8 rounded-full bg-gray-800/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+          <svg class="w-5 h-5 text-gray-800 sm:w-6 sm:h-6 dark:text-gray-800" fill="none" stroke="currentColor"
             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
           </svg>
           <span class="hidden">Next</span>
         </span>
-      </button>
+      </div>
     </div>
   </div>
 </template>

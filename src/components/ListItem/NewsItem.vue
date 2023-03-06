@@ -6,13 +6,17 @@ const props = defineProps({
     required: true,
   }
 })
+// const showImg = props.data.metaInfo.listStyle === 2 ? false : true
 </script>
 <template>
-  <div class="w-full h-32 flex justify-between">
+  <!-- <div :class="`w-full flex justify-between ${props.data.metaInfo.listStyle !== 2? 'h-32' : 'h-20'}`"> -->
+  <div :class="`w-full flex justify-between h-32`">
     <div class="flex flex-col justify-between">
-      <div class="text-xl font-medium cursor-pointer hover:text-primary">粤桂协作｜驻忻城县工作组赴信宜市实地考察调研</div>
-      <InfoBar :data="{source:'111',comment:123,time:'2022-12'}"></InfoBar>
+      <div class="text-xl font-medium cursor-pointer hover:text-primary">{{ props.data.listTitle }}</div>
+      <InfoBar :data="{ source: props.data.metaInfo.chnlName, comment: props.data.commentCount, time: '2022-12' }">
+      </InfoBar>
     </div>
-    <img :src="data.src" class="h-full w-44 rounded-lg object-cover" />
+    <img v-if="props.data.metaInfo.listStyle !== 2" :src="props.data.metaInfo.thumbnails[0]"
+      class="h-full w-44 rounded-lg object-cover" />
   </div>
 </template>

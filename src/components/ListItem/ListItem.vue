@@ -1,26 +1,27 @@
 <script setup>
 import { ref, watch } from 'vue'
-import Carousel from './Carousel.vue';
 import NewsItem from './NewsItem.vue';
 import ImageListItem from './ImageListItem.vue';
-const list = ref([
-  {
-    name: '1',
-    src: 'https://flowbite.com/docs/images/carousel/carousel-1.svg',
-  },
-  {
-    name: '2',
-    src: 'https://flowbite.com/docs/images/carousel/carousel-2.svg',
-  },
-  {
-    name: '3',
-    src: 'https://flowbite.com/docs/images/carousel/carousel-3.svg',
+import NarrowImage from './NarrowImage.vue';
+const props = defineProps({
+  data: {
+    type: Object,
   }
-])
+})
+const switchType = (type) => {
+  const {metaInfo} = props.data
+  if(metaInfo.listStyle === type) {
+    return true
+  }
+  return false
+}
+const componentsList = {
+  0:NewsItem,
+  1:ImageListItem,
+  2:NewsItem,
+  4:NarrowImage,
+}
 </script>
 <template>
-  <Carousel :list="list" class="mb-4" />
-  <NewsItem :data="list[0]" class="mb-4"></NewsItem>
-  <NewsItem :data="list[0]" class="mb-4"></NewsItem>
-  <ImageListItem :list="list" class="mb-4"></ImageListItem>
+  <component :is="componentsList[props.data.metaInfo.listStyle]" :data="props.data" class="mb-6"></component>
 </template>

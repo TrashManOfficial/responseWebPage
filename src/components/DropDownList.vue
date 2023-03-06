@@ -23,7 +23,7 @@ const buttonClick = (item) => {
           <path d="M12 15.713L18.01 9.70299L16.597 8.28799L12 12.888L7.40399 8.28799L5.98999 9.70199L12 15.713Z"
             fill="currentColor"></path>
         </svg>
-        <div v-if="isButtonHover" class="absolute top-5 right-0 pt-2">
+        <div v-if="isButtonHover" class="absolute top-5 right-0 pt-2 z-40">
           <div class="z-20 w-20 py-2 overflow-hidden bg-white rounded-md shadow-xl dark:bg-gray-800">
             <a v-for="item in props.list" @click="buttonClick(item)" href="#"
               class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-200 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
