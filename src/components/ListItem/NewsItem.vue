@@ -10,10 +10,10 @@ const props = defineProps({
 </script>
 <template>
   <!-- <div :class="`w-full flex justify-between ${props.data.metaInfo.listStyle !== 2? 'h-32' : 'h-20'}`"> -->
-  <div :class="`w-full flex justify-between h-32`">
+  <div :class="`w-full flex justify-between h-32 pb-4 border-b-[1px] border-gray-300`">
     <div class="flex flex-col justify-between">
       <div class="text-xl font-medium cursor-pointer hover:text-primary">{{ props.data.listTitle }}</div>
-      <InfoBar :data="{ source: props.data.metaInfo.chnlName, comment: props.data.commentCount, time: '2022-12' }">
+      <InfoBar :data="{ source: props.data.metaInfo.source, comment: props.data.commentCount, time: props.data.docPubTime }">
       </InfoBar>
     </div>
     <img v-if="props.data.metaInfo.listStyle !== 2" :src="props.data.metaInfo.thumbnails[0]"

@@ -1,7 +1,8 @@
 <script setup>
+import util from '../../utils'
 const props = defineProps({
-  data:{
-    type:Object
+  data: {
+    type: Object
   }
 })
 </script>
@@ -12,6 +13,6 @@ const props = defineProps({
       <img src="../../assets/comment.png" class="h-5 w-6" />
       <div>评论：<span class="text-primary">{{ data.comment }}</span></div>
     </div>
-    <div class="mr-4">{{ data.time }}</div>
+    <div class="mr-4">{{ util.timeFormat(data.time) }}</div>
   </div>
 </template>

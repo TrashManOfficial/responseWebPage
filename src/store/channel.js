@@ -3,25 +3,91 @@ import axiosReqres from "../axios";
 
 const channelStore = createStore({
   state: {
+    channelListRaw: {
+      loading: false,
+      data: [],
+    },
     channelList: {
       loading: false,
       data: [],
     },
     currentChannelId: "",
+    currentGroupId: "",
+    currentDocId: "",
     articleList: {
       loading: false,
       data: [],
     },
+    articleDetail: {},
+    articleContent: {},
     featuresList: [],
     page: {
       current: 0,
       size: 10,
+      keyword:'',
     },
     articleListOver: false,
-    carouselList:[],
+    carouselList: [],
   },
   actions: {
-    async getCarousel({ commit },id) {
+    async searchArticleList({ state, commit }, text) {
+      state.page.current = 0;
+      state.page.keyword = text;
+      try {
+        commit("CLEAR_ARTICLES");
+        // commit("ARTICLES", articles);
+      } catch (err) {
+        throw err;
+      }
+    },
+    async setCurrentDocId({ commit }, id) {
+      try {
+        commit("CURRENT_DOC_ID", id);
+      } catch (err) {
+        throw err;
+      }
+    },
+    async setCurrentGroupId({ commit }, id) {
+      try {
+        commit("CURRENT_GROUP_ID", id);
+        commit("CLEAR_ARTICLES");
+      } catch (err) {
+        throw err;
+      }
+    },
+    async getSpecialList({ state, commit }, param) {
+      const data = await axiosReqres(`/articles/getSpecialGroupArticle`, {
+        params: {
+          docId: state.currentDocId,
+          groupId: state.currentGroupId,
+          visibility: 1,
+          page: state.page.current,
+          size: state.page.size,
+        },
+      });
+      try {
+        commit("SPECIAL_LIST", data);
+      } catch (err) {
+        throw err;
+      }
+    },
+    async getArticleContent({ commit }, url) {
+      const data = await axiosReqres(url);
+      try {
+        commit("ARTICLE_CONTENT", data);
+      } catch (err) {
+        throw err;
+      }
+    },
+    async getArticleDetails({ commit }, id) {
+      const data = await axiosReqres(`/articles/${id}`, {});
+      try {
+        commit("ARTICLE_DETAILS", data);
+      } catch (err) {
+        throw err;
+      }
+    },
+    async getCarousel({ commit }, id) {
       const data = await axiosReqres("/articles/getRotationArticles", {
         params: {
           chnlId: id,
@@ -41,9 +107,10 @@ const channelStore = createStore({
       }
     },
     async getChannel({ commit }) {
-      const allChannel = await axiosReqres("/channels", {
+      const allChannel = await axiosReqres("/channels/getChildId", {
         params: {
-          channelId: 350,
+          channelId: 348,
+          size: 100,
         },
       });
       try {
@@ -68,6 +135,7 @@ const channelStore = createStore({
           visibility: 1,
           page: state.page.current,
           size: state.page.size,
+          keyword: state.page.keyword,
         },
       });
       try {
@@ -86,14 +154,45 @@ const channelStore = createStore({
     },
   },
   mutations: {
+    CURRENT_DOC_ID: (state, id) => {
+      state.currentDocId = id;
+    },
+    CURRENT_GROUP_ID: (state, id) => {
+      state.currentGroupId = id;
+    },
+    // CLEAR_SPECIAL_ARTICLES: (state) => {
+    //   state.articleList.data = [];
+    //   state.page.current = 0;
+    // },
+    SPECIAL_LIST: (state, articles) => {
+      state.articleList.loading = false;
+      state.articleListOver = articles.data.data.length < 10 ? true : false;
+      state.articleList.data = [
+        ...state.articleList.data,
+        ...articles.data.data,
+      ];
+    },
+    ARTICLE_CONTENT: (state, data) => {
+      state.articleContent = data;
+    },
+    ARTICLE_DETAILS: (state, data) => {
+      state.articleDetail = data.data.data;
+    },
     CAROUSEL: (state, carousel) => {
       state.carouselList = carousel.data.data;
     },
     CHANNEL: (state, channel) => {
+      state.channelListRaw.data = [...channel.data.data];
+      const filterData = channel.data.data.filter(
+        (i) => i.defaultPosition === 1 || i.defaultPosition === 2
+      );
       state.channelList.loading = false;
-      state.channelList.data = channel.data.data;
+      state.channelList.data = state.currentChannelId
+        ? state.channelList.data
+        : filterData;
       if (state.channelList.data.length) {
-        state.currentChannelId = state.channelList.data[0].id;
+        state.currentChannelId =
+          state.currentChannelId || state.channelList.data[0].id;
       }
     },
     CURRENT_ID: (state, id) => {
@@ -110,7 +209,6 @@ const channelStore = createStore({
     CLEAR_ARTICLES: (state) => {
       state.articleList.data = [];
       state.page.current = 0;
-      state.carouselList = [];
     },
     ADD_PAGE: (state) => {
       state.page.current += 1;

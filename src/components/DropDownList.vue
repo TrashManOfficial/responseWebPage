@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useElementHover } from '@vueuse/core'
 const buttonRef = ref()
+// let isButtonHover = true
 let isButtonHover = useElementHover(buttonRef)
 const emit = defineEmits(['itemClick'])
 const props = defineProps({
@@ -24,11 +25,12 @@ const buttonClick = (item) => {
             fill="currentColor"></path>
         </svg>
         <div v-if="isButtonHover" class="absolute top-5 right-0 pt-2 z-40">
-          <div class="z-20 w-20 py-2 overflow-hidden bg-white rounded-md shadow-xl dark:bg-gray-800">
-            <a v-for="item in props.list" @click="buttonClick(item)" href="#"
-              class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-200 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+          <div class="z-20 p-2 overflow-hidden bg-white rounded-md shadow-xl dark:bg-gray-800 max-w-80 flex flex-wrap">
+            <!-- 点击自动跳转首页 -->
+            <div v-for="item in props.list" @click="buttonClick(item)" href="#"
+              class="min-w-10 p-2 flex justify-center items-center text-sm text-gray-600 capitalize transition-colors duration-200 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
               {{ item.name }}
-            </a>
+            </div>
           </div>
         </div>
       </div>

@@ -57,7 +57,7 @@ const switchImg = (flag) => {
             class="absolute top-1/2 left-1/2 text-2xl font-semibold text-white -translate-x-1/2 -translate-y-1/2 sm:text-3xl dark:text-gray-800">First
             Slide</span>
           <img :src="item.metaInfo.thumbnails[0]"
-            class="block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" alt="">
+            class="block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover" alt="">
           <div
             class="flex absolute bottom-0 left-1/2 z-30 space-x-3 -translate-x-1/2 bg-black w-full h-11 opacityLinear text-2xl text-white justify-center items-center rounded-b-lg">
             {{ item.title }}</div>
@@ -97,6 +97,6 @@ const switchImg = (flag) => {
 </template>
 <style scoped>
 .opacityLinear {
-  background: linear-gradient(to top, rgba(0, 0, 0, 1) 20.0%, rgba(0, 0, 0, 0.01) 100%);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 5.0%, rgba(0, 0, 0, 0.01) 100%);
 }
 </style>

@@ -11,50 +11,64 @@ const { state } = channelStore
 const DEFAULT_KEY = 'showmore'
 
 const props = defineProps({
+  data: Array,
   isPc: Boolean,
 })
 const tabList = ref([])
 
-onMounted(() => {
-  tabList.value = [...state.channelList.data.map(i => {
-    return {
-      id: i.id,
-      name: i.title
-    }
-  })]
-  currentId.value = state.currentChannelId
+watch(() => props.data, (value) => {
+  if (value.metaInfo) {
+    tabList.value = value.metaInfo.specialDoc.groups.map(i => {
+      return {
+        id: i.groupId,
+        name: i.name,
+      }
+    })
+    setCurrentId(tabList.value[0].id)
+  }
 })
 
-watch(() => state.channelList.data, () => {
-  tabList.value = [...state.channelList.data.map(i => {
-    return {
-      id: i.id,
-      name: i.title
-    }
-  })]
-})
+// onMounted(() => {
+//   tabList.value = [...state.articleDetail.metaInfo.specialDoc.groups.map(i => {
+//     return {
+//       id: i.id,
+//       name: i.title
+//     }
+//   })]
+//   currentId.value = state.currentChannelId
+// })
+
+// watch(() => state.articleDetail.metaInfo.specialDoc.groups, () => {
+//   tabList.value = [...state.articleDetail.metaInfo.specialDoc.groups.map(i => {
+//     return {
+//       id: i.id,
+//       name: i.title
+//     }
+//   })]
+// })
 
 const DEFAULT_LENGTH = computed(() => {
   return props.isPc ? 6 : tabList.value.length
 })
 
-//监听屏幕变化，改变tab显示形式
-watch(() => props.isPc, (value) => {
-  DEFAULT_LENGTH.value = value ? 6 : tabList.value.length;
-  tabList.value = [...tabList.value]
-})
+// //监听屏幕变化，改变tab显示形式
+// watch(() => props.isPc, (value) => {
+//   DEFAULT_LENGTH.value = value ? 6 : tabList.value.length;
+//   tabList.value = [...tabList.value]
+// })
 
 const currentId = ref('')
 
-watch(() => state.currentChannelId, (value) => {
-  currentId.value = value
-})
+// watch(() => state.currentChannelId, (value) => {
+//   currentId.value = value
+// })
 
 const setCurrentId = (id) => {
-  channelStore.dispatch('setCurrentId', id).then(() => {
-    channelStore.dispatch('getArticleList')
+  currentId.value = id
+  channelStore.dispatch('setCurrentGroupId', id).then(() => {
+    channelStore.dispatch('getSpecialList')
   })
-  router.push({path: '/home',query:{id: id}})
+  // router.push('/')
 }
 
 const showList = computed(() => {
@@ -76,9 +90,9 @@ const hiddenListClick = (data) => {
 }
 </script>
 <template>
-  <div class="w-full flex ph:overflow-x-auto justify-between">
+  <div class="w-full flex ph:overflow-x-auto justify-start">
     <div class="flex justify-start" v-for="item in showList">
-      <StrongTitle :name="item.name" :isCurrent="currentId === item.id" v-if="item.id !== DEFAULT_KEY"
+      <StrongTitle class="mr-4" :name="item.name" :isCurrent="currentId === item.id" v-if="item.id !== DEFAULT_KEY"
         @click="setCurrentId(item.id)">
       </StrongTitle>
       <div v-else-if="hiddenList.length" class="w-fit cursor-pointer">

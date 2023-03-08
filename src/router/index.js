@@ -4,6 +4,7 @@ const BlankLayout = () => import('../layouts/BlankLayout.vue')
 const NotFound = () => import('../views/NotFound.vue')
 const Home = () => import('../views/Home.vue')
 const Detail = () => import('../views/Detail.vue')
+const Special = () => import('../views/Special.vue')
 
 
 
@@ -19,17 +20,17 @@ const routes = [
         name: 'Home',
         component: Home
       },
-      // {
-      //   path: '/register',
-      //   name: 'register',
-      //   component: Register
-      // },
     ]
   },
   {
     path: '/detail',
     name: 'detail',
     component: Detail
+  },
+  {
+    path: '/special',
+    name: 'special',
+    component: Special
   },
   {
     path: '/:pathMatch(.*)*',
@@ -43,8 +44,8 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
-  next()
-})
+// router.beforeEach((to, from, next) => {
+//   next()
+// })
 
 export default router
