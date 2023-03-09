@@ -22,7 +22,8 @@
     </div>
     <div class="w-3/4 flex ph:w-full justify-center mt-3">
       <div class="w-9/12 ph:w-full">
-        <CustomTabsSpecial ref="tabRef" class="mb-8" :isPc="isPc" :data="ArticleDetail"></CustomTabsSpecial>
+        <CustomTabsSpecial ref="tabRef" class="mb-8" :isPc="isPc"
+          :data="ArticleDetail"></CustomTabsSpecial>
         <div class="w-full">
           <ListItem v-for="item in Articlelist" :data="item" :key="item" @click="toDetail(item)">
           </ListItem>
@@ -32,12 +33,17 @@
         <SideBar></SideBar>
       </div>
     </div>
-    <div class="w-full" ref="bottomRef">footer</div>
+    <ScrollToTop v-if="!tabIsVisible"></ScrollToTop>
+    <div class="w-full" ref="bottomRef">
+      <Footer></Footer>
+    </div>
   </div>
 </template>
 <script setup>
 import { ref, watch, onUnmounted } from 'vue';
 import ListItem from '../components/ListItem/ListItem.vue';
+import Footer from '../components/Footer.vue';
+import ScrollToTop from '../components/ScrollToTop.vue';
 import CustomTabs from '../components/CustomTabs.vue';
 import CustomTabsSpecial from '../components/CustomTabsSpecial.vue';
 import util from '../utils'
@@ -73,6 +79,9 @@ const getSpecialDetail = () => {
     channelStore.dispatch('setCurrentDocId', query.docid).then(() => {
       startRenderList.value = true
     })
+    // if (!ArticleDetail.value.metaInfo?.specialDoc?.groups) {
+    //   channelStore.dispatch('setCurrentGroupId', ArticleDetail.value.metaInfo.groupId)
+    // }
     // channelStore.dispatch('setCurrentGroupId',query.docid)
   })
 }
@@ -100,7 +109,7 @@ onUnmounted(() => {
 })
 
 const toDetail = (data) => {
-  util.jump(data, router)
+  util.jump(data, router, isPc)
 }
 </script>
 <style scoped>

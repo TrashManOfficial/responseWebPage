@@ -18,34 +18,20 @@ const tabList = ref([])
 
 watch(() => props.data, (value) => {
   if (value.metaInfo) {
-    tabList.value = value.metaInfo.specialDoc.groups.map(i => {
+    tabList.value = value.metaInfo?.specialDoc?.groups.map(i => {
       return {
         id: i.groupId,
         name: i.name,
       }
     })
-    setCurrentId(tabList.value[0].id)
+    if (value.metaInfo?.specialDoc?.groups) {
+      setCurrentId(tabList.value[0].id)
+    } else {
+      setCurrentId(value.metaInfo.groupId)
+    }
+
   }
 })
-
-// onMounted(() => {
-//   tabList.value = [...state.articleDetail.metaInfo.specialDoc.groups.map(i => {
-//     return {
-//       id: i.id,
-//       name: i.title
-//     }
-//   })]
-//   currentId.value = state.currentChannelId
-// })
-
-// watch(() => state.articleDetail.metaInfo.specialDoc.groups, () => {
-//   tabList.value = [...state.articleDetail.metaInfo.specialDoc.groups.map(i => {
-//     return {
-//       id: i.id,
-//       name: i.title
-//     }
-//   })]
-// })
 
 const DEFAULT_LENGTH = computed(() => {
   return props.isPc ? 6 : tabList.value.length
@@ -97,13 +83,13 @@ const hiddenListClick = (data) => {
       </StrongTitle>
       <div v-else-if="hiddenList.length" class="w-fit cursor-pointer">
         <DropDownList :list="hiddenList" @itemClick="hiddenListClick">
-          <div class="font-FZ text-2xl px-1 break-keep font-light">
+          <div class="font-trsFontFace text-2xl px-1 break-keep font-light">
             {{ item.name }}</div>
         </DropDownList>
       </div>
     </div>
     <div v-if="!isPc" class="flex-1">
-      <div :class="`font-FZ text-2xl px-1 break-keep`">
+      <div :class="`font-trsFontFace text-2xl px-1 break-keep`">
         更多
       </div>
     </div>

@@ -5,6 +5,7 @@ const NotFound = () => import('../views/NotFound.vue')
 const Home = () => import('../views/Home.vue')
 const Detail = () => import('../views/Detail.vue')
 const Special = () => import('../views/Special.vue')
+const About = () => import('../views/About.vue')
 
 
 
@@ -31,6 +32,11 @@ const routes = [
     path: '/special',
     name: 'special',
     component: Special
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: About
   },
   {
     path: '/:pathMatch(.*)*',

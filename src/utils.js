@@ -14,29 +14,55 @@ const timeFormat = (dateStr) => {
   return `${year}-${month}-${day}`;
 };
 
-const jump = (data, router) => {
+const jump = (data, router, flag) => {
   const { metaInfo } = data;
   let params = {};
   let path = "";
-  if (metaInfo.listStyle === 4) {
+  if(metaInfo.docType === 8) {
+    window.open(metaInfo.linkDoc,'_blank')
+    return
+  }
+  if (metaInfo.docType === 3) {
     path = "special";
-    const groupid = data.metaInfo.specialDoc.groups[0].groupId;
+    // const groupid = data.metaInfo.specialDoc.groups[0].groupId;
     const { docId } = data;
     params = {
-      groupid,
+      // groupid,
       docid: docId,
     };
+    const herf = router.resolve({
+      name: path,
+      query: params,
+    });
+    if (flag.value) {
+      window.open(herf.href, "_blank");
+    } else {
+      window.location.href = `https://app.xkb.com.cn/fundhtml/#/specialdoc?id=${data.id}`;
+    }
   } else {
     path = "detail";
     params = {
       id: data.id,
     };
+    const herf = router.resolve({
+      name: path,
+      query: params,
+    });
+    if (flag.value) {
+      window.open(herf.href, "_blank");
+    } else {
+      window.location.href = `https://app.xkb.com.cn/fundhtml/#/details?id=${data.id}`;
+    }
   }
-  const herf = router.resolve({
-    name: path,
-    query: params,
-  });
-  window.open(herf.href, "_blank");
+  // const herf = router.resolve({
+  //   name: path,
+  //   query: params,
+  // });
+  // if (flag.value) {
+  //   window.open(herf.href, "_blank");
+  // } else {
+  //   window.location.href = `https://app.xkb.com.cn/fundhtml/#/details?id=${data.id}`;
+  // }
 };
 
 export default {

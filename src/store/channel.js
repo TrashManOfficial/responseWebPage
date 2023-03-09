@@ -24,7 +24,7 @@ const channelStore = createStore({
     page: {
       current: 0,
       size: 10,
-      keyword:'',
+      keyword: "",
     },
     articleListOver: false,
     carouselList: [],
@@ -80,7 +80,7 @@ const channelStore = createStore({
       }
     },
     async getArticleDetails({ commit }, id) {
-      const data = await axiosReqres(`/articles/${id}`, {});
+      const data = await axiosReqres(`/getArticle/${id}`, {});
       try {
         commit("ARTICLE_DETAILS", data);
       } catch (err) {
@@ -113,8 +113,15 @@ const channelStore = createStore({
           size: 100,
         },
       });
+      const addChannel = await axiosReqres("/channels/getChildId", {
+        params: {
+          channelId: 382,
+          size: 100,
+        },
+      });
+      const finalData = [...allChannel.data.data,...addChannel.data.data]
       try {
-        commit("CHANNEL", allChannel);
+        commit("CHANNEL", finalData);
       } catch (err) {
         throw err;
       }
@@ -182,8 +189,8 @@ const channelStore = createStore({
       state.carouselList = carousel.data.data;
     },
     CHANNEL: (state, channel) => {
-      state.channelListRaw.data = [...channel.data.data];
-      const filterData = channel.data.data.filter(
+      state.channelListRaw.data = [...channel];
+      const filterData = channel.filter(
         (i) => i.defaultPosition === 1 || i.defaultPosition === 2
       );
       state.channelList.loading = false;

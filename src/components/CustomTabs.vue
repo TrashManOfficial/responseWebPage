@@ -9,6 +9,7 @@ const router = useRouter()
 const { state } = channelStore
 
 const DEFAULT_KEY = 'showmore'
+const DEFAULT_LIST_LENGTH = 7
 
 const props = defineProps({
   isPc: Boolean,
@@ -35,12 +36,12 @@ watch(() => state.channelList.data, () => {
 })
 
 const DEFAULT_LENGTH = computed(() => {
-  return props.isPc ? 6 : tabList.value.length
+  return props.isPc ? DEFAULT_LIST_LENGTH : tabList.value.length
 })
 
 //监听屏幕变化，改变tab显示形式
 watch(() => props.isPc, (value) => {
-  DEFAULT_LENGTH.value = value ? 6 : tabList.value.length;
+  DEFAULT_LENGTH.value = value ? DEFAULT_LIST_LENGTH : tabList.value.length;
   tabList.value = [...tabList.value]
 })
 
@@ -83,13 +84,13 @@ const hiddenListClick = (data) => {
       </StrongTitle>
       <div v-else-if="hiddenList.length" class="w-fit cursor-pointer">
         <DropDownList :list="hiddenList" @itemClick="hiddenListClick">
-          <div class="font-FZ text-2xl px-1 break-keep font-light">
+          <div class="font-trsFontFace text-2xl px-1 break-keep font-light">
             {{ item.name }}</div>
         </DropDownList>
       </div>
     </div>
     <div v-if="!isPc" class="flex-1">
-      <div :class="`font-FZ text-2xl px-1 break-keep`">
+      <div :class="`font-trsFontFace text-2xl px-1 break-keep`">
         更多
       </div>
     </div>

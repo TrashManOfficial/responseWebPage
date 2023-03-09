@@ -32,7 +32,7 @@ module.exports = {
         searchBarBackground: "url('/src/assets/searchBg.png')",
       },
       fontFamily: {
-        FZ: ["FZ"],
+        trsFontFace: ["trsFontFace"],
       },
       keyframes: {
         "slide-down": {
