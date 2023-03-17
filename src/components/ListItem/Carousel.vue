@@ -8,7 +8,7 @@ const breakpoints = useBreakpoints(breakpointsTailwind)
 const isPc = ref(breakpoints.greater('md'))
 const router = useRouter()
 const toDetail = (data) => {
-  utils.jump(data, router,isPc)
+  utils.jump(data, router, isPc)
 }
 const carouselRef = ref()
 let isCarouselHover = useElementHover(carouselRef)
@@ -54,6 +54,7 @@ const switchImg = (flag) => {
     reduceIndex()
   }
 }
+const reg = new RegExp('_600')
 </script>
 <template>
   <div class="mx-auto rounded-lg" ref="carouselRef">
@@ -63,10 +64,9 @@ const switchImg = (flag) => {
         <div v-for="(item, index) in props.list"
           :class="`duration-700 ease-in-out ${currentVisibleImg === index ? '' : 'hidden'}`">
           <span
-            class="absolute top-1/2 left-1/2 text-2xl font-semibold text-white -translate-x-1/2 -translate-y-1/2 sm:text-3xl dark:text-gray-800">First
-            Slide</span>
-          <img :src="item.metaInfo.thumbnails[0]" @click="toDetail(item)"
-            class="block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover" alt="">
+            class="absolute top-1/2 left-1/2 text-2xl font-semibold text-white -translate-x-1/2 -translate-y-1/2 sm:text-3xl dark:text-gray-800"></span>
+          <img :src="utils.replaceImgPath(item.metaInfo.focusPic)" @click="toDetail(item)"
+            class="min-h-[460px] ph:min-h-[250px] block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover" alt="">
           <div
             class="whitespace-normal text-center ph:text-sm flex p-1 absolute bottom-0 left-1/2 z-30 space-x-3 -translate-x-1/2 bg-black w-full min-h-11 max-h-10 opacityLinear text-2xl text-white justify-center items-center rounded-b-lg">
             {{ item.title }}</div>
@@ -74,10 +74,10 @@ const switchImg = (flag) => {
       </div>
       <!-- Slider indicators -->
       <div class="flex absolute bottom-10 left-1/2 z-30 space-x-3 -translate-x-1/2">
-            <button v-for="(item, index) in props.list" type="button"
-              :class="`w-3 h-3 rounded-full ${index === currentVisibleImg ? 'bg-white' : 'bg-slate-600'}`"
-              @click="selectImg(index)"></button>
-          </div>
+        <button v-for="(item, index) in props.list" type="button"
+          :class="`w-3 h-3 rounded-full ${index === currentVisibleImg ? 'bg-white' : 'bg-slate-600'}`"
+          @click="selectImg(index)"></button>
+      </div>
       <!-- Slider controls -->
       <div
         class="flex absolute top-0 left-0 z-0 justify-center items-center px-4 h-full cursor-pointer group focus:outline-none">

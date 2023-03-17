@@ -6,6 +6,7 @@ const Home = () => import('../views/Home.vue')
 const Detail = () => import('../views/Detail.vue')
 const Special = () => import('../views/Special.vue')
 const About = () => import('../views/About.vue')
+const Search = () => import('../views/Search.vue')
 
 
 
@@ -32,6 +33,11 @@ const routes = [
     path: '/special',
     name: 'special',
     component: Special
+  },
+  {
+    path: '/search',
+    name: 'search',
+    component: Search
   },
   {
     path: '/about',

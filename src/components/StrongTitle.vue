@@ -6,8 +6,8 @@ const props = defineProps({
 })
 </script>
 <template>
-  <div class="w-fit cursor-pointer">
-    <div :class="`font-trsFontFace text-2xl px-1 break-keep ${props.isCurrent ? 'font-extrabold' : 'font-light'}`">
+  <div class="w-fit cursor-pointer ph:mr-1">
+    <div :class="`font-trsFontFace text-2xl ph:text-xl px-1 break-keep ${props.isCurrent ? 'font-extrabold' : 'font-light'}`">
       {{ props.name }}</div>
     <div :class="`w-fit ${props.isCurrent ? 'isActiveTab font-extrabold' : ''}`"></div>
   </div>

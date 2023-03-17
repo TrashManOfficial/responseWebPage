@@ -1,6 +1,6 @@
 <template>
   <div class="full flex flex-col">
-    <div class="full flex justify-between px-36 py-10 items-center ph:px-1 ph:py-3 ph:flex-col">
+    <!-- <div class="full flex justify-between px-36 py-10 items-center ph:px-1 ph:py-3 ph:flex-col">
       <div>
         <a class="active:text-yellow-400 hover:text-yellow-400" href="https://beian.miit.gov.cn/#/Integrated/index"
           target="_blank">粤ICP备10220059号 </a>
@@ -26,7 +26,7 @@
         <a class="active:text-yellow-400 hover:text-yellow-400" href="http://www.wenming.cn/"
           target="_blank">中国文明网传播文明</a>
       </div>
-    </div>
+    </div> -->
     <div class="full h-12 bg-primary text-white flex justify-between items-center px-8 ph:px-1 ph:text-sm">
       <div class="flex items-center">
         <img class="h-8 mr-4" src="../assets/miniLogo.png" alt="">

@@ -4,6 +4,7 @@ import DropDownList from './DropDownList.vue';
 import StrongTitle from './StrongTitle.vue';
 import channelStore from '../store/channel';
 import { useRouter } from 'vue-router'
+import { XMarkIcon } from '@heroicons/vue/24/solid'
 const router = useRouter()
 
 const { state } = channelStore
@@ -15,6 +16,9 @@ const props = defineProps({
   isPc: Boolean,
 })
 const tabList = ref([])
+
+const showModal = ref(false)
+
 
 onMounted(() => {
   tabList.value = [...state.channelList.data.map(i => {
@@ -36,7 +40,8 @@ watch(() => state.channelList.data, () => {
 })
 
 const DEFAULT_LENGTH = computed(() => {
-  return props.isPc ? DEFAULT_LIST_LENGTH : tabList.value.length
+  return DEFAULT_LIST_LENGTH
+  // return props.isPc ? DEFAULT_LIST_LENGTH : tabList.value.length
 })
 
 //监听屏幕变化，改变tab显示形式
@@ -53,9 +58,10 @@ watch(() => state.currentChannelId, (value) => {
 
 const setCurrentId = (id) => {
   channelStore.dispatch('setCurrentId', id).then(() => {
+    window.scrollTo(0, 0)
     channelStore.dispatch('getArticleList')
   })
-  router.push({path: '/home',query:{id: id}})
+  router.push({ path: '/home', query: { id: id } })
 }
 
 const showList = computed(() => {
@@ -73,26 +79,56 @@ const hiddenListClick = (data) => {
   //交换下拉列表的数据和显示tab的末尾数据
   channelStore.dispatch('exchangeItem', { index: DEFAULT_LENGTH.value, data })
   setCurrentId(data.id)
+  switchShowModal(false)
   // debugger
+}
+
+const switchShowModal = (flag) => {
+  if (flag.value) {
+    showModal.value = flag.value
+  } else {
+    showModal.value = !showModal.value
+  }
 }
 </script>
 <template>
-  <div class="w-full flex ph:overflow-x-auto justify-between">
+  <div class="w-full flex ph:overflow-x-auto justify-between scrollBar ph:pr-10">
     <div class="flex justify-start" v-for="item in showList">
       <StrongTitle :name="item.name" :isCurrent="currentId === item.id" v-if="item.id !== DEFAULT_KEY"
         @click="setCurrentId(item.id)">
       </StrongTitle>
-      <div v-else-if="hiddenList.length" class="w-fit cursor-pointer">
+      <div v-else-if="hiddenList.length && isPc" class="w-fit cursor-pointer">
         <DropDownList :list="hiddenList" @itemClick="hiddenListClick">
           <div class="font-trsFontFace text-2xl px-1 break-keep font-light">
             {{ item.name }}</div>
         </DropDownList>
       </div>
     </div>
-    <div v-if="!isPc" class="flex-1">
-      <div :class="`font-trsFontFace text-2xl px-1 break-keep`">
+    <div v-if="!isPc" class="flex-1 right-0 top-[68px] bg-white ph:right-0 ph:absolute ph:top-[68px]"
+      style="border-left: 1px solid gray;" @click="switchShowModal">
+      <div :class="`font-trsFontFace text-xl px-1 break-keep`">
         更多
+      </div>
+    </div>
+    <div v-if="showModal" class="fixed left-0 h-80 w-full bg-white bottom-0 rounded-t-lg z-[120] p-3 shadow-xl"
+      style="box-shadow: 0 -5px 6px #c1c1c1;">
+      <div class="flex w-full justify-between mb-3">
+        <StrongTitle :name="`更多栏目`" :isCurrent="true">更多栏目</StrongTitle>
+        <XMarkIcon class="w-5 h-5" @click="switchShowModal(false)"></XMarkIcon>
+      </div>
+      <div class="w-full h-72 flex justify-start flex-wrap overflow-y-scroll">
+        <div :title="item.name" v-for="item in hiddenList" @click="hiddenListClick(item)" href="#"
+          class="min-w-24 p-2 text-center overflow-hidden justify-center text-ellipsis whitespace-nowrap items-center text-xl text-gray-600  transition-colors duration-200 transform hover:bg-gray-100">
+          {{ item.name }}
+        </div>
       </div>
     </div>
   </div>
 </template>
+<style scoped>
+.scrollBar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  background-color: transparent;
+}
+</style>

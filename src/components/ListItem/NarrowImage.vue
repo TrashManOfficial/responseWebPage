@@ -1,5 +1,6 @@
 <script setup>
 import InfoBar from './InfoBar.vue';
+import utils from '../../utils';
 const props = defineProps({
   data: {
     type: Object,
@@ -9,6 +10,6 @@ const props = defineProps({
 </script>
 <template>
   <div class="w-full">
-    <img :src="props.data.metaInfo.thumbnails[0].split('_')[0]+'.jpg'" class="w-full rounded-xl"/>
+    <img v-lazy="utils.replaceImgPath(props.data.metaInfo.thumbnails[0])" class="w-full rounded-xl"/>
   </div>
 </template>

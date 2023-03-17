@@ -1,15 +1,14 @@
 <template>
-  <div class="w-full flex fixed top-0 bg-white h-20 items-center shadow-md z-50 justify-center"
-    v-if="!tabIsVisible && isPc">
+  <div class="w-full flex fixed top-0 bg-white h-20 items-center shadow-md z-50 justify-center" v-if="isPc">
     <div class="w-[1500px] flex">
-      <div class="w-3/4 flex items-center justify-between">
-        <img class="m-2 h-12" src="../assets/logo.png" alt="新快网logo">
+      <div class="w-full flex items-center justify-between">
+        <img class="m-2 h-12" src="../assets/logo.png" alt="新快网logo" @click="toHome">
         <CustomTabs ref="tabRef" class="justify-around" :isPc="isPc"></CustomTabs>
       </div>
-      <div class="w-1/4 mx-2">
+      <!-- <div class="w-1/4 mx-2">
         <SearchBar @onSearch="onSearch">
         </SearchBar>
-      </div>
+      </div> -->
     </div>
 
   </div>
@@ -25,17 +24,17 @@
       </div>
       <div class="w-full h-full flex-1 flex items-center">
         <div class="h-16 w-full ph:h-14 ph:px-2 flex justify-center ph:justify-between ph:items-center ph:bg-primary">
-          <img class="hidden ph:flex ph:h-8" src="../assets/logo_m.png" alt="">
-          <SearchBar @onSearch="onSearch" class="w-1/2 ph:w-[250px]">
+          <img class="hidden ph:flex ph:h-8" src="../assets/logo_m.png" alt="" @click="toHome">
+          <SearchBar @onSearch="onSearch" :data="query.keyword" class="w-1/2 ph:w-[250px]" ref="tabRef">
           </SearchBar>
         </div>
       </div>
     </div>
     <div class="w-[1100px] flex ph:w-full justify-center mt-5 ph:mt-3">
       <div class="w-9/12 ph:w-full ph:px-2 mr-6 ph:mr-0">
-        <CustomTabs ref="tabRef" class="mb-8 ph:mb-4 ph:pb-2 ph:border-b-[1px] ph:border-gray-300" :isPc="isPc"></CustomTabs>
+        <!-- <CustomTabs ref="tabRef" class="mb-8 ph:mb-4 ph:pb-2 ph:border-b-[1px] ph:border-gray-300" :isPc="isPc"></CustomTabs> -->
         <div class="w-full" v-if="Articlelist.length">
-          <Carousel v-if="carouselList.length" :list="carouselList" class="mb-3"></Carousel>
+          <!-- <Carousel v-if="carouselList.length" :list="carouselList" class="mb-3"></Carousel> -->
           <ListItem v-for="item in Articlelist" :data="item" :key="item" @click="toDetail(item)">
           </ListItem>
         </div>
@@ -61,7 +60,6 @@ import Footer from '../components/Footer.vue';
 import CustomTabs from '../components/CustomTabs.vue';
 import SearchBar from '../components/SearchBar.vue';
 import SideBar from '../components/SideBar.vue';
-import Carousel from '../components/ListItem/Carousel.vue';
 import ScrollToTop from '../components/ScrollToTop.vue';
 import DropDownModal from '../components/DropDownModal.vue';
 import { useRoute, useRouter } from 'vue-router'
@@ -79,18 +77,22 @@ const tabIsVisible = useElementVisibility(tabRef)
 const Articlelist = ref([])
 
 const { query } = useRoute()
+const { keyword } = query
 
 onMounted(() => {
-  getChannels()
+  channelStore.dispatch('searchArticleList', keyword).then(() => {
+    getChannels()
+  })
+  // getChannels()
 })
-
 
 const getChannels = () => {
   channelStore.dispatch('getChannel').then(() => {
-    getArticleList()
+    // getArticleList()
     // getCarousel(channelStore.state.currentChannelId)
     const id = channelStore.state.channelListRaw.data.find(i => i.title == '专题').id
     channelStore.dispatch('getArticleList', id)
+    startRenderList.value = true
   })
 }
 const getArticleList = () => {
@@ -103,28 +105,31 @@ watch(() => channelStore.state.articleList.data, (value) => {
   Articlelist.value = [...value];
 })
 
-const carouselList = ref([])
-watch(() => channelStore.state.currentChannelId, (value) => {
-  if (value) {
-    getCarousel(value)
-  }
-})
+// const carouselList = ref([])
+// watch(() => channelStore.state.currentChannelId, (value) => {
+//   if (value) {
+//     getCarousel(value)
+//   }
+// })
 
-const getCarousel = (value) => {
-  const { title } = channelStore.state.channelList.data.find(i => i.id == value)
-  if (title === '首页') {
-    channelStore.dispatch('getCarousel', value).then(() => {
-      carouselList.value = [...channelStore.state.carouselList]
-      return
-    })
-  }
-  carouselList.value = []
-}
+// const getCarousel = (value) => {
+//   const { title } = channelStore.state.channelList.data.find(i => i.id == value)
+//   if (title === '首页') {
+//     channelStore.dispatch('getCarousel', value).then(() => {
+//       carouselList.value = [...channelStore.state.carouselList]
+//       return
+//     })
+//   }
+//   carouselList.value = []
+// }
 
 watch(targetIsVisible, (value) => {
+  // debugger
   if (startRenderList.value && value && !channelStore.state.articleListOver) {
     channelStore.dispatch('addPage').then(() => {
-      getArticleList()
+      channelStore.dispatch('searchArticleListAdd').then(() => {
+        // channelStore.dispatch('getArticleList')
+      })
     })
   }
 })
@@ -135,13 +140,16 @@ const toDetail = (data) => {
 }
 
 const onSearch = (text) => {
-  const herf = router.resolve({
-    path:'search',
-    query:{
-      keyword:text
-    }
+  channelStore.dispatch('searchArticleList', text).then(() => {
+    // channelStore.dispatch('getArticleList')
   })
-  window.open(herf.href,'_blank')
+}
+
+const toHome = () => {
+  const href = router.resolve({
+    path:'/home'
+  })
+  window.open(href.href,'_blank')
 }
 
 </script>

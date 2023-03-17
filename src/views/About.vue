@@ -3,7 +3,7 @@
     :class="`w-full flex bg-white h-20 items-center shadow-md z-50 justify-between ${tabIsVisible ? '' : 'fixed top-0'}`"
     v-if="isPc">
     <div class="w-3/4 flex items-center justify-between">
-      <img class="m-2" src="../assets/logo.png">
+      <img class="m-2 h-12" src="../assets/logo.png">
       <CustomTabs class="justify-around" :isPc="isPc"></CustomTabs>
     </div>
   </div>
@@ -84,7 +84,7 @@ const getChannels = () => {
 const getSpecialDetail = () => {
   channelStore.dispatch('getArticleDetails', query.docid).then(() => {
     ArticleDetail.value = channelStore.state.articleDetail
-    imgUrl.value = channelStore.state.articleDetail.metaInfo.thumbnails[0].split('_')[0] + '.jpg'
+    imgUrl.value = util.replaceImgPath(channelStore.state.articleDetail.metaInfo.thumbnails[0])
     channelStore.dispatch('setCurrentDocId', query.docid).then(() => {
       startRenderList.value = true
     })

@@ -1,31 +1,30 @@
 <template>
   <div
-    :class="`w-full flex bg-white h-20 items-center shadow-md z-50 justify-between ${tabIsVisible ? '' : 'fixed top-0'}`"
+    :class="`w-full flex bg-white h-20 items-center shadow-md z-50 justify-center ${tabIsVisible ? '' : 'fixed top-0'}`"
     v-if="isPc">
-    <div class="w-3/4 flex items-center justify-between">
-      <img class="m-2" src="../assets/logo.png">
+    <div class="w-[1500px] flex items-center justify-between">
+      <img class="m-2 h-12" src="../assets/logo.png" @click="toHome">
       <CustomTabs class="justify-around" :isPc="isPc"></CustomTabs>
     </div>
   </div>
   <div ref="tabRef"></div>
   <div class="flex flex-col items-center">
-    <div class="w-3/4 h-full flex flex-col items-center p-12  ph:bg-none ph:h-fit opacityLinear">
+    <div class="w-[1100px] h-full flex flex-col items-center p-12  ph:bg-none ph:h-fit opacityLinear">
       <div class="w-full shadow-xl rounded-2xl">
         <img class="w-full rounded-2xl" :src="imgUrl" alt="">
         <div class="text-3xl p-8 flex justify-between items-center">
           <div>{{ ArticleDetail.title }}</div>
-          <div class="text-lg text-gray-700">{{ util.timeFormat(ArticleDetail.docPubTime) }}</div>
+          <!-- <div class="text-lg text-gray-700">{{ util.timeFormat(ArticleDetail.docPubTime) }}</div> -->
         </div>
       </div>
       <!-- <div class="h-16 w-full ph:h-fit flex justify-center">
       </div> -->
     </div>
-    <div class="w-3/4 flex ph:w-full justify-center mt-3">
-      <div class="w-9/12 ph:w-full">
-        <CustomTabsSpecial ref="tabRef" class="mb-8" :isPc="isPc"
-          :data="ArticleDetail"></CustomTabsSpecial>
+    <div class="w-[1100px] flex ph:w-full justify-center mt-3">
+      <div class="w-9/12 ph:w-full mr-6">
+        <CustomTabsSpecial ref="tabRef" class="mb-8" :isPc="isPc" :data="ArticleDetail"></CustomTabsSpecial>
         <div class="w-full">
-          <ListItem v-for="item in Articlelist" :data="item" :key="item" @click="toDetail(item)">
+          <ListItem v-for="item in Articlelist" :plainData="item" :key="item" @click="toDetail(item)">
           </ListItem>
         </div>
       </div>
@@ -40,7 +39,7 @@
   </div>
 </template>
 <script setup>
-import { ref, watch, onUnmounted } from 'vue';
+import { ref, watch, onBeforeMount } from 'vue';
 import ListItem from '../components/ListItem/ListItem.vue';
 import Footer from '../components/Footer.vue';
 import ScrollToTop from '../components/ScrollToTop.vue';
@@ -66,23 +65,31 @@ const imgUrl = ref('')
 const Articlelist = ref([])
 const ArticleDetail = ref({})
 
+onBeforeMount(() => {
+  redirectToMobile()
+})
+
+const redirectToMobile = () => {
+  if (!isPc.value) {
+    window.location.href = `https://app.xkb.com.cn/fundhtml/#/specialdoc?id=${query.docid}`;
+  }
+}
+
 const getChannels = () => {
   channelStore.dispatch('getChannel').then(() => {
     // channelStore.dispatch('setCurrentId','not')
     getSpecialDetail()
+    const id = channelStore.state.channelListRaw.data.find(i => i.title == '专题').id
+    channelStore.dispatch('getArticleList', id)
   })
 }
 const getSpecialDetail = () => {
   channelStore.dispatch('getArticleDetails', query.docid).then(() => {
     ArticleDetail.value = channelStore.state.articleDetail
-    imgUrl.value = channelStore.state.articleDetail.metaInfo.thumbnails[0].split('_')[0] + '.jpg'
+    imgUrl.value = util.replaceImgPath(channelStore.state.articleDetail.metaInfo.thumbnails[0])
     channelStore.dispatch('setCurrentDocId', query.docid).then(() => {
       startRenderList.value = true
     })
-    // if (!ArticleDetail.value.metaInfo?.specialDoc?.groups) {
-    //   channelStore.dispatch('setCurrentGroupId', ArticleDetail.value.metaInfo.groupId)
-    // }
-    // channelStore.dispatch('setCurrentGroupId',query.docid)
   })
 }
 const getArticleList = () => {
@@ -96,20 +103,23 @@ watch(() => channelStore.state.articleList.data, (value) => {
   Articlelist.value = [...value];
 })
 
-watch(targetIsVisible, (value) => {
-  if (startRenderList.value && value && !channelStore.state.articleListOver) {
-    channelStore.dispatch('addPage').then(() => {
-      getArticleList()
-    })
-  }
-})
-
-onUnmounted(() => {
-  channelStore.dispatch('setCurrentId', '')
-})
+// watch(targetIsVisible, (value) => {
+//   if (startRenderList.value && value && !channelStore.state.articleListOver) {
+//     channelStore.dispatch('addPage').then(() => {
+//       getArticleList()
+//     })
+//   }
+// })
 
 const toDetail = (data) => {
   util.jump(data, router, isPc)
+}
+
+const toHome = () => {
+  const href = router.resolve({
+    path:'/home'
+  })
+  window.open(href.href,'_blank')
 }
 </script>
 <style scoped>

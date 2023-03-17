@@ -1,7 +1,8 @@
 <template>
-  <div class="w-full flex bg-white h-20 items-center shadow-md z-50 justify-between">
-    <div class="w-3/4 flex items-center justify-between">
-      <img class="m-2" src="../assets/logo.png" alt="新快网logo">
+  <div
+    :class="`w-full flex bg-white h-20 items-center shadow-md z-50 justify-center ${tabIsVisible ? '' : 'fixed top-0'}`">
+    <div class="w-[1500px] flex items-center justify-between">
+      <img class="m-2 h-12" src="../assets/logo.png" alt="新快网logo" @click="toHome">
       <CustomTabs class="justify-around" :isPc="isPc"></CustomTabs>
     </div>
     <div class="w-1/4 mx-2">
@@ -11,18 +12,19 @@
   </div>
   <div class="flex justify-center">
     <div class="w-3/4 flex ph:w-full justify-center mt-3 ">
+      <ShareBar></ShareBar>
       <div class="max-w-[750px] pr-6 flex flex-col ph:w-full">
         <div>
           <div class="text-3xl font-black my-6" ref="tabRef">{{ ArticleDetail.title }}</div>
           <InfoBar class="mb-3" :data="{ source: ArticleDetail?.metaInfo?.source, time: ArticleDetail.docPubTime }">
           </InfoBar>
         </div>
-        <div v-if="type === 1" v-html="str" class="text-justify">
+        <div v-if="type === 1" v-html="str" class="text-justify contentSpe">
         </div>
         <CarouselDetail v-if="type === 2" :list="imgList" class="w-full">
         </CarouselDetail>
         <div v-if="type === 7">
-          <video :poster="videoDetail.coverPic" controls>
+          <video :poster="videoDetail.coverPic" controls class="m-auto">
             <source :src="videoDetail.url" type="video/mp4">
           </video>
           <div v-html="str">
@@ -46,6 +48,26 @@
             <ListItem :plainData="item"></ListItem>
           </div>
         </div>
+        <div v-if="commentList.length">
+          <StrongTitle :name="`评论回复（${commentList.length}）`" :isCurrent="true" class="my-4"></StrongTitle>
+          <div v-for="item in commentList">
+            <div class="flex items-start w-full">
+              <div><img class="h-12 w-12 rounded-full" :src="item.headUrl" alt=""></div>
+              <div class="w-full ml-5">
+                <div class="flex justify-between text-lg items-center">
+                  <div class="text-xl font-bold">{{ item.publisherFullname }}</div>
+                  <div>{{ `点赞数：` + item.favoriteCount }}</div>
+                </div>
+                <div class="mt-3 mb-4">{{ item.content }}</div>
+                <div>
+                  <div>{{ utils.timeFormat(item.crDate) }}</div>
+                  <div></div>
+                </div>
+              </div>
+            </div>
+            <!-- <ListItem :plainData="item"></ListItem> -->
+          </div>
+        </div>
       </div>
       <div class=" w-3/12 ph:hidden pl-2">
         <SideBar></SideBar>
@@ -65,10 +87,11 @@ import SearchBar from '../components/SearchBar.vue';
 import SideBar from '../components/SideBar.vue';
 import InfoBar from '../components/ListItem/InfoBar.vue';
 import Footer from '../components/Footer.vue';
+import ShareBar from '../components/ShareBar.vue';
 
 import ScrollToTop from '../components/ScrollToTop.vue';
 import CarouselDetail from '../components/ListItem/CarouselDetail.vue';
-import { ref, onUnmounted } from 'vue'
+import { ref, onUnmounted, onBeforeMount } from 'vue'
 import { breakpointsTailwind, useBreakpoints, useElementVisibility } from '@vueuse/core'
 import channelStore from '../store/channel';
 import { useRoute, useRouter } from 'vue-router'
@@ -85,6 +108,30 @@ const imgList = ref([])
 const videoDetail = ref({})
 const type = ref(undefined)
 const router = useRouter()
+
+const commentList = ref([])
+
+const onSearch = (text) => {
+  const herf = router.resolve({
+    path:'search',
+    query:{
+      keyword:text
+    }
+  })
+  window.open(herf.href,'_blank')
+}
+
+onBeforeMount(() => {
+  redirectToMobile()
+})
+
+const redirectToMobile = () => {
+  if (!isPc.value) {
+    window.location.href = `https://www.xkb.com.cn/fundhtml/#/details?id=${query.id}`;
+  }
+}
+
+
 const toDetail = (data) => {
   const temp = {
     docId: data.docId,
@@ -97,6 +144,8 @@ const toDetail = (data) => {
 }
 const getChannels = () => {
   channelStore.dispatch('getChannel').then(() => {
+    const id = channelStore.state.channelListRaw.data.find(i => i.title == '专题').id
+    channelStore.dispatch('getArticleList', id)
   })
 }
 getChannels()
@@ -105,19 +154,19 @@ getChannels()
 const getArticleDetail = () => {
   channelStore.dispatch('getArticleDetails', query.id).then(() => {
     handleArticle(channelStore.state.articleDetail)
-    // const url = channelStore.state.articleDetail.contentUrl
-    // ArticleDetail.value = channelStore.state.articleDetail
-    // if (url) {
-    //   axios.get(url).then((res) => {
-    //     str.value = res.data.htmlContent
-    //   }).catch(e => console.log(e))
-    // }
+  })
+  channelStore.dispatch('getCommentList', query.id).then(() => {
+    commentList.value = channelStore.state.commentList
   })
 }
 getArticleDetail()
-onUnmounted(() => {
-  channelStore.dispatch('setCurrentId', '')
-})
+
+
+const getCommentList = () => {
+  channelStore.dispatch('getCommentList', query.id).then(() => {
+    commentList.value = channelStore.state.commentList
+  })
+}
 
 const handleArticle = (data) => {
   ArticleDetail.value = data
@@ -148,4 +197,16 @@ const handleArticle = (data) => {
 
 }
 
+const toHome = () => {
+  const href = router.resolve({
+    path:'/home'
+  })
+  window.open(href.href,'_blank')
+}
+
 </script>
+<style>
+.contentSpe iframe {
+  min-height: 410px;
+}
+</style>

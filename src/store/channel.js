@@ -21,21 +21,64 @@ const channelStore = createStore({
     articleDetail: {},
     articleContent: {},
     featuresList: [],
+    commentList: [],
     page: {
       current: 0,
-      size: 10,
+      size: 20,
       keyword: "",
     },
     articleListOver: false,
     carouselList: [],
   },
   actions: {
+    async getCommentList({ state, commit }, id) {
+      const list = await axiosReqres(
+        // `/fundapis/comment/api/comments/article/191165/exemption`,
+        `/fundapis/comment/api/comments/article/${id}/exemption`,
+        {
+          baseURL: "",
+        }
+      );
+      try {
+        commit("COMMENT", list);
+      } catch (err) {
+        throw err;
+      }
+    },
     async searchArticleList({ state, commit }, text) {
-      state.page.current = 0;
+      // state.page.current = 0;
       state.page.keyword = text;
+      const articles = await axiosReqres("/articles", {
+        params: {
+          //区分不同web和客户端参数，固定
+          visibility: 1,
+          page: state.page.current,
+          size: state.page.size,
+          keyword: state.page.keyword,
+        },
+      });
       try {
         commit("CLEAR_ARTICLES");
-        // commit("ARTICLES", articles);
+        commit("ARTICLES", articles);
+      } catch (err) {
+        throw err;
+      }
+    },
+    async searchArticleListAdd({ state, commit }) {
+      // state.page.current = 0;
+      // state.page.keyword = text;
+      const articles = await axiosReqres("/articles", {
+        params: {
+          //区分不同web和客户端参数，固定
+          visibility: 1,
+          page: state.page.current,
+          size: state.page.size,
+          keyword: state.page.keyword,
+        },
+      });
+      try {
+        // commit("CLEAR_ARTICLES");
+        commit("ARTICLES", articles);
       } catch (err) {
         throw err;
       }
@@ -56,15 +99,18 @@ const channelStore = createStore({
       }
     },
     async getSpecialList({ state, commit }, param) {
-      const data = await axiosReqres(`/articles/getSpecialGroupArticle`, {
-        params: {
-          docId: state.currentDocId,
-          groupId: state.currentGroupId,
-          visibility: 1,
-          page: state.page.current,
-          size: state.page.size,
-        },
-      });
+      // const data = await axiosReqres(`/articles/getSpecialGroupArticle`, {
+      //   params: {
+      //     docId: state.currentDocId,
+      //     groupId: state.currentGroupId,
+      //     visibility: 1,
+      //     page: state.page.current,
+      //     size: state.page.size,
+      //   },
+      // });
+      const data = state.articleDetail.metaInfo.specialDoc.groups.find(
+        (i) => i.groupId === state.currentGroupId
+      ).docList;
       try {
         commit("SPECIAL_LIST", data);
       } catch (err) {
@@ -119,14 +165,15 @@ const channelStore = createStore({
           size: 100,
         },
       });
-      const finalData = [...allChannel.data.data,...addChannel.data.data]
+      const finalData = [...allChannel.data.data, ...addChannel.data.data];
       try {
         commit("CHANNEL", finalData);
       } catch (err) {
         throw err;
       }
     },
-    async setCurrentId({ commit }, id) {
+    async setCurrentId({ state, commit }, id) {
+      state.page.keyword = "";
       try {
         commit("CURRENT_ID", id);
         commit("CLEAR_ARTICLES");
@@ -141,8 +188,8 @@ const channelStore = createStore({
           //区分不同web和客户端参数，固定
           visibility: 1,
           page: state.page.current,
-          size: state.page.size,
-          keyword: state.page.keyword,
+          size: id ? 10 : state.page.size,
+          keyword: id ? '' : state.page.keyword,
         },
       });
       try {
@@ -161,6 +208,9 @@ const channelStore = createStore({
     },
   },
   mutations: {
+    COMMENT: (state, data) => {
+      state.commentList = data.data.data;
+    },
     CURRENT_DOC_ID: (state, id) => {
       state.currentDocId = id;
     },
@@ -172,12 +222,20 @@ const channelStore = createStore({
     //   state.page.current = 0;
     // },
     SPECIAL_LIST: (state, articles) => {
-      state.articleList.loading = false;
-      state.articleListOver = articles.data.data.length < 10 ? true : false;
-      state.articleList.data = [
-        ...state.articleList.data,
-        ...articles.data.data,
-      ];
+      // state.articleList.loading = false;
+      // state.articleListOver = articles.data.data.length < 10 ? true : false;
+      // state.articleList.data = [
+      //   ...state.articleList.data,
+      //   ...articles.data.data,
+      // ];
+      state.articleList.data = articles.map((i) => {
+        return {
+          ...i,
+          metaInfo: {
+            ...i,
+          },
+        };
+      });
     },
     ARTICLE_CONTENT: (state, data) => {
       state.articleContent = data;

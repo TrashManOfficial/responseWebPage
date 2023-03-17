@@ -29,7 +29,7 @@ module.exports = {
         secondary: "rgba(217, 79, 20, 1)",
       },
       backgroundImage: {
-        searchBarBackground: "url('/src/assets/searchBg.png')",
+        searchBarBackground: "url('/src/assets/searchBg.jpg')",
       },
       fontFamily: {
         trsFontFace: ["trsFontFace"],
