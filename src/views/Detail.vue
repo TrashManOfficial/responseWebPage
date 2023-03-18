@@ -19,7 +19,7 @@
           <InfoBar class="mb-3" :data="{ source: ArticleDetail?.metaInfo?.source, time: ArticleDetail.docPubTime }">
           </InfoBar>
         </div>
-        <div v-if="type === 1" v-html="str" class="text-justify contentSpe">
+        <div ref="contentRef" v-if="type === 1" v-html="str" class="text-justify contentSpe">
         </div>
         <CarouselDetail v-if="type === 2" :list="imgList" class="w-full">
         </CarouselDetail>
@@ -91,7 +91,7 @@ import ShareBar from '../components/ShareBar.vue';
 
 import ScrollToTop from '../components/ScrollToTop.vue';
 import CarouselDetail from '../components/ListItem/CarouselDetail.vue';
-import { ref, onUnmounted, onBeforeMount } from 'vue'
+import { ref, onUnmounted, onBeforeMount, watch, onUpdated } from 'vue'
 import { breakpointsTailwind, useBreakpoints, useElementVisibility } from '@vueuse/core'
 import channelStore from '../store/channel';
 import { useRoute, useRouter } from 'vue-router'
@@ -109,20 +109,25 @@ const videoDetail = ref({})
 const type = ref(undefined)
 const router = useRouter()
 
+const contentRef = ref()
+
 const commentList = ref([])
 
 const onSearch = (text) => {
   const herf = router.resolve({
-    path:'search',
-    query:{
-      keyword:text
+    path: 'search',
+    query: {
+      keyword: text
     }
   })
-  window.open(herf.href,'_blank')
+  window.open(herf.href, '_blank')
 }
 
 onBeforeMount(() => {
   redirectToMobile()
+})
+
+onUpdated(() => {
 })
 
 const redirectToMobile = () => {
@@ -130,6 +135,89 @@ const redirectToMobile = () => {
     window.location.href = `https://www.xkb.com.cn/fundhtml/#/details?id=${query.id}`;
   }
 }
+
+// watch(() => contentRef.value, (value) => {
+//   debugger
+//   if (value) {
+//     const $imgList = value.querySelectorAll("img");
+//     let imgUrlArr = [], // 只存url
+//       imgDataArr = []; // 缩略图、原图、描述
+
+//       $imgList.forEach((element) => {
+//       const videoid = element.getAttribute("videoid");
+
+//       // 判断是视频封面图
+//       if (videoid) {
+//         console.log("视频id", videoid);
+
+//         if (element.parentElement) {
+//           const videoUrl = element.getAttribute("data-videourl");
+//           let posterUrl = element.getAttribute("src");
+//           if (posterUrl === "./images/video_default.jpg") {
+//             posterUrl = videoDefault;
+//           }
+//           renderHtmlVideo(element.parentElement, videoUrl, posterUrl);
+//         }
+//       } else {
+//         // 判断是普通的图片
+
+//         const thumbUrl = element.getAttribute("src");
+//         let originalUrl = thumbUrl + "",
+//           imgDesc = "";
+
+//         let imgnameSrcArray = thumbUrl.split("/");
+//         if (
+//           imgnameSrcArray[imgnameSrcArray.length - 1].indexOf("_600.") > 0
+//         ) {
+//           imgnameSrcArray[imgnameSrcArray.length - 1] = imgnameSrcArray[
+//             imgnameSrcArray.length - 1
+//           ].replace(/_600./g, ".");
+//           originalUrl = imgnameSrcArray.join("/");
+//         }
+
+//         element.setAttribute("data-index", imgUrlArr.length);
+
+//         // h5预览，使用处理后的原图
+//         // element.setAttribute("src", originalUrl);
+//         imgUrlArr.push(originalUrl);
+
+//         // 下一个p标签
+//         const $nextTagP = element?.parentElement?.nextElementSibling;
+
+//         if (
+//           $nextTagP &&
+//           ($nextTagP.getAttribute("type") === "imagenote" ||
+//             ($nextTagP.getAttribute("class") &&
+//               $nextTagP.getAttribute("class").indexOf("imagenote") > -1))
+//         ) {
+//           imgDesc = trim($nextTagP.innerText);
+//         }
+
+//         // // 给ios 及 安卓使用
+//         // imgDataArr.push({
+//         //   thumbUrl: thumbUrl, // 缩略图
+//         //   url: originalUrl, // 原图
+//         //   desc: imgDesc, // 描述
+//         // });
+
+//         // element.addEventListener("error", (e) => {
+//         //   e.target.src = imgError;
+//         //   const curIndex = e.target.getAttribute("data-index");
+//         //   console.log(curIndex, "error-index");
+
+//         //   let _tArr = [...imgUrlArr];
+//         //   _tArr[curIndex] = imgError;
+
+//         //   setPreviewImgs((state) => ({
+//         //     ...state,
+//         //     images: _tArr,
+//         //   }));
+//         //   // element.removeEventListener("error");
+//         // });
+//       }
+//     });
+//   }
+// })
 
 
 const toDetail = (data) => {
@@ -177,7 +265,14 @@ const handleArticle = (data) => {
     ArticleDetail.value = channelStore.state.articleDetail
     if (url) {
       axios.get(url).then((res) => {
-        str.value = res.data.htmlContent
+        let temp = res.data.htmlContent
+        if (temp.indexOf("<p><video") != -1) {
+          temp = temp.replace(
+            /<p><video/g,
+            "<p style='text-indent: 0em;'><video "
+          );
+        }
+        str.value = temp
       }).catch(e => console.log(e))
     }
     return
@@ -199,9 +294,9 @@ const handleArticle = (data) => {
 
 const toHome = () => {
   const href = router.resolve({
-    path:'/home'
+    path: '/home'
   })
-  window.open(href.href,'_blank')
+  window.open(href.href, '_blank')
 }
 
 </script>

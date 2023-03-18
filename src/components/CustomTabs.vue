@@ -4,7 +4,7 @@ import DropDownList from './DropDownList.vue';
 import StrongTitle from './StrongTitle.vue';
 import channelStore from '../store/channel';
 import { useRouter } from 'vue-router'
-import { XMarkIcon } from '@heroicons/vue/24/solid'
+import { XMarkIcon, Bars3BottomRightIcon } from '@heroicons/vue/24/solid'
 const router = useRouter()
 
 const { state } = channelStore
@@ -18,6 +18,8 @@ const props = defineProps({
 const tabList = ref([])
 
 const showModal = ref(false)
+
+const el = ref(null)
 
 
 onMounted(() => {
@@ -40,8 +42,8 @@ watch(() => state.channelList.data, () => {
 })
 
 const DEFAULT_LENGTH = computed(() => {
-  return DEFAULT_LIST_LENGTH
-  // return props.isPc ? DEFAULT_LIST_LENGTH : tabList.value.length
+  // return DEFAULT_LIST_LENGTH
+  return props.isPc ? DEFAULT_LIST_LENGTH : tabList.value.length
 })
 
 //监听屏幕变化，改变tab显示形式
@@ -57,8 +59,12 @@ watch(() => state.currentChannelId, (value) => {
 })
 
 const setCurrentId = (id) => {
+  switchShowModal('close')
   channelStore.dispatch('setCurrentId', id).then(() => {
     window.scrollTo(0, 0)
+    if (!props.isPc) {
+      document.getElementById(currentId.value).scrollIntoView({inline: "start"})     
+    }
     channelStore.dispatch('getArticleList')
   })
   router.push({ path: '/home', query: { id: id } })
@@ -79,21 +85,31 @@ const hiddenListClick = (data) => {
   //交换下拉列表的数据和显示tab的末尾数据
   channelStore.dispatch('exchangeItem', { index: DEFAULT_LENGTH.value, data })
   setCurrentId(data.id)
-  switchShowModal(false)
   // debugger
 }
 
-const switchShowModal = (flag) => {
-  if (flag.value) {
-    showModal.value = flag.value
+const mobileItemClick = (data) => {
+  setCurrentId(data.id)
+}
+// const itemRef = ref([])
+const setCurretRef = (el) => {
+  if (el) {
+    itemRef.value.push(el)
+  }
+}
+
+const switchShowModal = (close) => {
+  if (close === 'close') {
+    showModal.value = false
+    return
   } else {
     showModal.value = !showModal.value
   }
 }
 </script>
 <template>
-  <div class="w-full flex ph:overflow-x-auto justify-between scrollBar ph:pr-10">
-    <div class="flex justify-start" v-for="item in showList">
+  <div class="w-full flex ph:overflow-x-auto justify-between scrollBar ph:pr-8" ref="el">
+    <div :id="item.id" class="flex justify-start" v-for="item in showList">
       <StrongTitle :name="item.name" :isCurrent="currentId === item.id" v-if="item.id !== DEFAULT_KEY"
         @click="setCurrentId(item.id)">
       </StrongTitle>
@@ -105,20 +121,22 @@ const switchShowModal = (flag) => {
       </div>
     </div>
     <div v-if="!isPc" class="flex-1 right-0 top-[68px] bg-white ph:right-0 ph:absolute ph:top-[68px]"
-      style="border-left: 1px solid gray;" @click="switchShowModal">
-      <div :class="`font-trsFontFace text-xl px-1 break-keep`">
-        更多
-      </div>
+      @click="switchShowModal">
+      <Bars3BottomRightIcon class="h-7 ml-2"></Bars3BottomRightIcon>
+      <!-- <div :class="`font-trsFontFace text-xl px-1 break-keep`">
+
+        </div> -->
     </div>
-    <div v-if="showModal" class="fixed left-0 h-80 w-full bg-white bottom-0 rounded-t-lg z-[120] p-3 shadow-xl"
-      style="box-shadow: 0 -5px 6px #c1c1c1;">
+    <div v-if="showModal" class="fixed left-0 h-[600px] w-full bg-white bottom-0 rounded-t-lg z-[120] p-3 shadow-xl"
+      style="box-shadow: 0 -6px 6px #c1c1c1;">
       <div class="flex w-full justify-between mb-3">
         <StrongTitle :name="`更多栏目`" :isCurrent="true">更多栏目</StrongTitle>
-        <XMarkIcon class="w-5 h-5" @click="switchShowModal(false)"></XMarkIcon>
+        <XMarkIcon class="w-5 h-5" @click="switchShowModal('close')"></XMarkIcon>
       </div>
-      <div class="w-full h-72 flex justify-start flex-wrap overflow-y-scroll">
-        <div :title="item.name" v-for="item in hiddenList" @click="hiddenListClick(item)" href="#"
-          class="min-w-24 p-2 text-center overflow-hidden justify-center text-ellipsis whitespace-nowrap items-center text-xl text-gray-600  transition-colors duration-200 transform hover:bg-gray-100">
+      <div class="w-full h-[550px] flex justify-start flex-wrap overflow-y-scroll items-start">
+        <div :title="item.name" v-for="item in showList.filter(i => i.name !== '更多')" @click="mobileItemClick(item)"
+          href="#"
+          class="min-w-[100px] p-2 text-center h-11 mr-3 mb-2 bg-slate-200 overflow-hidden justify-center text-ellipsis whitespace-nowrap items-center text-xl  transition-colors duration-200 transform hover:bg-gray-100">
           {{ item.name }}
         </div>
       </div>

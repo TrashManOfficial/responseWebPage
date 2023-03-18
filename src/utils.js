@@ -22,11 +22,13 @@ const timeFormat = (dateStr) => {
 
   // 使用正则表达式检查日期格式是否为'yyyy-MM-dd'
   const dateString = `${year}-${month}-${day}`;
-  const regEx = /^\d{4}-\d{2}-\d{2}$/;
-  if (!dateString.match(regEx)) {
-    return ""; // 如果不符合格式，则返回false
+  const regEx = /^\d{4}-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])$/;
+  if (regEx.test(dateString)) {
+    return dateString; // 如果不符合格式，则返回false
+  } else {
+    return ''
   }
-  return dateString;
+  // return dateString;
 };
 
 const jump = (data, router, flag) => {
