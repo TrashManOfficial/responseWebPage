@@ -3,9 +3,10 @@ import { ref, computed, watch, onMounted } from 'vue';
 import DropDownList from './DropDownList.vue';
 import StrongTitle from './StrongTitle.vue';
 import channelStore from '../store/channel';
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { XMarkIcon, Bars3BottomRightIcon } from '@heroicons/vue/24/solid'
 const router = useRouter()
+const { query } = useRoute()
 
 const { state } = channelStore
 
@@ -63,7 +64,7 @@ const setCurrentId = (id) => {
   channelStore.dispatch('setCurrentId', id).then(() => {
     window.scrollTo(0, 0)
     if (!props.isPc) {
-      document.getElementById(currentId.value).scrollIntoView({inline: "start"})     
+      document.getElementById(currentId.value).scrollIntoView({ inline: "start" })
     }
     channelStore.dispatch('getArticleList')
   })
@@ -125,7 +126,7 @@ const switchShowModal = (close) => {
       <Bars3BottomRightIcon class="h-7 ml-2"></Bars3BottomRightIcon>
       <!-- <div :class="`font-trsFontFace text-xl px-1 break-keep`">
 
-        </div> -->
+          </div> -->
     </div>
     <div v-if="showModal" class="fixed left-0 h-[600px] w-full bg-white bottom-0 rounded-t-lg z-[120] p-3 shadow-xl"
       style="box-shadow: 0 -6px 6px #c1c1c1;">

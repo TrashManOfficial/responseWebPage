@@ -33,7 +33,8 @@
     </div>
     <div class="w-[1100px] flex ph:w-full justify-center mt-5 ph:mt-3">
       <div class="w-9/12 ph:w-full ph:px-2 mr-6 ph:mr-0">
-        <CustomTabs ref="tabRef" class="mb-8 ph:mb-4 ph:pb-2 ph:border-b-[1px] ph:border-gray-300" :isPc="isPc"></CustomTabs>
+        <CustomTabs ref="tabRef" class="mb-8 ph:mb-4 ph:pb-2 ph:border-b-[1px] ph:border-gray-300" :isPc="isPc">
+        </CustomTabs>
         <div class="w-full" v-if="Articlelist.length">
           <Carousel v-if="carouselList.length" :list="carouselList" class="mb-3"></Carousel>
           <ListItem v-for="item in Articlelist" :data="item" :key="item" @click="toDetail(item)">
@@ -54,7 +55,7 @@
   </div>
 </template>
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, nextTick } from 'vue';
 // import VirtualList from 'vue-virtual-scroll-list'
 import ListItem from '../components/ListItem/ListItem.vue';
 import Footer from '../components/Footer.vue';
@@ -86,9 +87,8 @@ onMounted(() => {
 
 
 const getChannels = () => {
-  channelStore.dispatch('getChannel').then(() => {
+  channelStore.dispatch('getChannel',query.id).then(() => {
     getArticleList()
-    // getCarousel(channelStore.state.currentChannelId)
     const id = channelStore.state.channelListRaw.data.find(i => i.title == '专题').id
     channelStore.dispatch('getArticleList', id)
   })
@@ -105,7 +105,7 @@ watch(() => channelStore.state.articleList.data, (value) => {
 
 const carouselList = ref([])
 watch(() => channelStore.state.currentChannelId, (value) => {
-  if (value) {
+  if (value && channelStore.state.channelList.data.length) {
     getCarousel(value)
   }
 })
@@ -119,6 +119,7 @@ const getCarousel = (value) => {
     })
   }
   carouselList.value = []
+
 }
 
 watch(targetIsVisible, (value) => {
@@ -136,12 +137,12 @@ const toDetail = (data) => {
 
 const onSearch = (text) => {
   const herf = router.resolve({
-    path:'search',
-    query:{
-      keyword:text
+    path: 'search',
+    query: {
+      keyword: text
     }
   })
-  window.open(herf.href,'_blank')
+  window.open(herf.href, '_blank')
 }
 
 </script>

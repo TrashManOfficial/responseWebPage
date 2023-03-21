@@ -152,7 +152,7 @@ const channelStore = createStore({
         throw e;
       }
     },
-    async getChannel({ commit }) {
+    async getChannel({ state, commit }, id = undefined) {
       const allChannel = await axiosReqres("/channels/getChildId", {
         params: {
           channelId: 348,
@@ -167,7 +167,7 @@ const channelStore = createStore({
       });
       const finalData = [...allChannel.data.data, ...addChannel.data.data];
       try {
-        commit("CHANNEL", finalData);
+        commit("CHANNEL", { channel: finalData, id });
       } catch (err) {
         throw err;
       }
@@ -189,7 +189,7 @@ const channelStore = createStore({
           visibility: 1,
           page: state.page.current,
           size: id ? 10 : state.page.size,
-          keyword: id ? '' : state.page.keyword,
+          keyword: id ? "" : state.page.keyword,
         },
       });
       try {
@@ -246,15 +246,24 @@ const channelStore = createStore({
     CAROUSEL: (state, carousel) => {
       state.carouselList = carousel.data.data;
     },
-    CHANNEL: (state, channel) => {
+    CHANNEL: (state, { channel, id }) => {
       state.channelListRaw.data = [...channel];
       const filterData = channel.filter(
         (i) => i.defaultPosition === 1 || i.defaultPosition === 2
       );
-      state.channelList.loading = false;
+      // state.channelList.loading = false;
       state.channelList.data = state.currentChannelId
         ? state.channelList.data
         : filterData;
+      if (id) {
+        const index = state.channelList.data.findIndex(i => i.id === id);
+        if (index !== -1 && index !== 2) {
+          // 如果找到了指定id的项，并且它不是第三项，则和第三项交换位置
+          [state.channelList.data[2], state.channelList.data[index]] = [state.channelList.data[index], state.channelList.data[2]];
+        }
+        state.currentChannelId = id;
+        return
+      }
       if (state.channelList.data.length) {
         state.currentChannelId =
           state.currentChannelId || state.channelList.data[0].id;

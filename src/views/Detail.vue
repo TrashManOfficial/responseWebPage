@@ -127,98 +127,41 @@ onBeforeMount(() => {
   redirectToMobile()
 })
 
-onUpdated(() => {
-})
-
 const redirectToMobile = () => {
   if (!isPc.value) {
     window.location.href = `https://www.xkb.com.cn/fundhtml/#/details?id=${query.id}`;
   }
 }
 
-// watch(() => contentRef.value, (value) => {
-//   debugger
-//   if (value) {
-//     const $imgList = value.querySelectorAll("img");
-//     let imgUrlArr = [], // 只存url
-//       imgDataArr = []; // 缩略图、原图、描述
+const handleVideoInHtml = (html) => {
+  // 假设HTML字符串存储在变量html中
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const imgTags = doc.querySelectorAll('img[data-videourl]');
+  if (!imgTags.length) {
+    return html
+  }
 
-//       $imgList.forEach((element) => {
-//       const videoid = element.getAttribute("videoid");
+  imgTags.forEach(img => {
+    const video = doc.createElement('video');
+    const videoSrc = img.getAttribute('data-videourl');
 
-//       // 判断是视频封面图
-//       if (videoid) {
-//         console.log("视频id", videoid);
+    // 将video标签属性设置为与img标签相同
+    video.setAttribute('src', videoSrc);
+    video.setAttribute('alt', img.getAttribute('alt'));
+    video.setAttribute('class', img.getAttribute('class'));
+    video.setAttribute('style', img.getAttribute('style'));
+    video.setAttribute('class', 'm-auto');
+    video.setAttribute('controls', true);
 
-//         if (element.parentElement) {
-//           const videoUrl = element.getAttribute("data-videourl");
-//           let posterUrl = element.getAttribute("src");
-//           if (posterUrl === "./images/video_default.jpg") {
-//             posterUrl = videoDefault;
-//           }
-//           renderHtmlVideo(element.parentElement, videoUrl, posterUrl);
-//         }
-//       } else {
-//         // 判断是普通的图片
+    // 将img标签替换为video标签
+    img.replaceWith(video);
+  });
 
-//         const thumbUrl = element.getAttribute("src");
-//         let originalUrl = thumbUrl + "",
-//           imgDesc = "";
-
-//         let imgnameSrcArray = thumbUrl.split("/");
-//         if (
-//           imgnameSrcArray[imgnameSrcArray.length - 1].indexOf("_600.") > 0
-//         ) {
-//           imgnameSrcArray[imgnameSrcArray.length - 1] = imgnameSrcArray[
-//             imgnameSrcArray.length - 1
-//           ].replace(/_600./g, ".");
-//           originalUrl = imgnameSrcArray.join("/");
-//         }
-
-//         element.setAttribute("data-index", imgUrlArr.length);
-
-//         // h5预览，使用处理后的原图
-//         // element.setAttribute("src", originalUrl);
-//         imgUrlArr.push(originalUrl);
-
-//         // 下一个p标签
-//         const $nextTagP = element?.parentElement?.nextElementSibling;
-
-//         if (
-//           $nextTagP &&
-//           ($nextTagP.getAttribute("type") === "imagenote" ||
-//             ($nextTagP.getAttribute("class") &&
-//               $nextTagP.getAttribute("class").indexOf("imagenote") > -1))
-//         ) {
-//           imgDesc = trim($nextTagP.innerText);
-//         }
-
-//         // // 给ios 及 安卓使用
-//         // imgDataArr.push({
-//         //   thumbUrl: thumbUrl, // 缩略图
-//         //   url: originalUrl, // 原图
-//         //   desc: imgDesc, // 描述
-//         // });
-
-//         // element.addEventListener("error", (e) => {
-//         //   e.target.src = imgError;
-//         //   const curIndex = e.target.getAttribute("data-index");
-//         //   console.log(curIndex, "error-index");
-
-//         //   let _tArr = [...imgUrlArr];
-//         //   _tArr[curIndex] = imgError;
-
-//         //   setPreviewImgs((state) => ({
-//         //     ...state,
-//         //     images: _tArr,
-//         //   }));
-//         //   // element.removeEventListener("error");
-//         // });
-//       }
-//     });
-//   }
-// })
-
+  // 将修改后的DOM对象转换回HTML字符串
+  const newHtml = doc.documentElement.outerHTML;
+  return newHtml;
+}
 
 const toDetail = (data) => {
   const temp = {
@@ -265,7 +208,7 @@ const handleArticle = (data) => {
     ArticleDetail.value = channelStore.state.articleDetail
     if (url) {
       axios.get(url).then((res) => {
-        let temp = res.data.htmlContent
+        let temp = handleVideoInHtml(res.data.htmlContent)
         if (temp.indexOf("<p><video") != -1) {
           temp = temp.replace(
             /<p><video/g,

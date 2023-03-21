@@ -77,7 +77,6 @@ const ArticleDetail = ref({})
 
 const getChannels = () => {
   channelStore.dispatch('getChannel').then(() => {
-    // channelStore.dispatch('setCurrentId','not')
     getSpecialDetail()
   })
 }
@@ -110,9 +109,6 @@ watch(targetIsVisible, (value) => {
   }
 })
 
-onUnmounted(() => {
-  channelStore.dispatch('setCurrentId', '')
-})
 
 const toDetail = (data) => {
   util.jump(data, router, isPc)

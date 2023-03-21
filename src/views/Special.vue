@@ -77,7 +77,6 @@ const redirectToMobile = () => {
 
 const getChannels = () => {
   channelStore.dispatch('getChannel').then(() => {
-    // channelStore.dispatch('setCurrentId','not')
     getSpecialDetail()
     const id = channelStore.state.channelListRaw.data.find(i => i.title == '专题').id
     channelStore.dispatch('getArticleList', id)
