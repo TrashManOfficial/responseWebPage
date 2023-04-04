@@ -1,4 +1,9 @@
 <template>
+  <Head>
+    <title>{{ArticleDetail.title}}</title>
+      <meta name="description" :content="ArticleDetail?.metaInfo?.shareDesc" />
+      <meta name="keywords" :content="ArticleDetail?.metaInfo?.keyWords" />
+  </Head>
   <div
     :class="`w-full flex bg-white h-20 items-center shadow-md z-50 justify-center ${tabIsVisible ? '' : 'fixed top-0'}`">
     <div class="w-[1500px] flex items-center justify-between">
@@ -19,10 +24,13 @@
           <InfoBar class="mb-3" :data="{ source: ArticleDetail?.metaInfo?.source, time: ArticleDetail.docPubTime }">
           </InfoBar>
         </div>
-        <div ref="contentRef" v-if="type === 1" v-html="str" class="text-justify contentSpe">
+        <!-- 一般文章稿件 -->
+        <div ref="contentRef" v-if="type === 1" v-html="str" class="text-justify contentSpe docContentBox">
         </div>
+        <!-- 图集稿件 -->
         <CarouselDetail v-if="type === 2" :list="imgList" class="w-full">
         </CarouselDetail>
+        <!-- 视频稿件 -->
         <div v-if="type === 7">
           <video :poster="videoDetail.coverPic" controls class="m-auto">
             <source :src="videoDetail.url" type="video/mp4">
@@ -88,11 +96,11 @@ import SideBar from '../components/SideBar.vue';
 import InfoBar from '../components/ListItem/InfoBar.vue';
 import Footer from '../components/Footer.vue';
 import ShareBar from '../components/ShareBar.vue';
-
 import ScrollToTop from '../components/ScrollToTop.vue';
 import CarouselDetail from '../components/ListItem/CarouselDetail.vue';
 import { ref, onUnmounted, onBeforeMount, watch, onUpdated } from 'vue'
 import { breakpointsTailwind, useBreakpoints, useElementVisibility } from '@vueuse/core'
+import { Head } from '@vueuse/head';
 import channelStore from '../store/channel';
 import { useRoute, useRouter } from 'vue-router'
 import utils from '../utils'
@@ -243,8 +251,141 @@ const toHome = () => {
 }
 
 </script>
-<style>
+<style lang="less">
 .contentSpe iframe {
   min-height: 410px;
+}
+
+@moduleMarginTop: 20PX;
+// 段落距离
+@moduleMarginBottom: 20PX;
+// 文章内容字数大小
+@docFontSize: 19PX;
+
+// 文章内图说字体大小
+@docNoteFontSize: 14PX;
+
+// 文章内容行高
+@docLineHeight: 2em;
+
+.docContentBox {
+  line-height: @docLineHeight !important;
+  font-size: @docFontSize;
+  // color: @text_color;
+  //font-size: 18PX;
+  //text-align: left;
+  min-height: 20vh;
+  box-sizing: border-box;
+  margin: 0;
+  text-align: justify;
+  word-break: break-word;
+  font-family: inherit;
+
+  img {
+    max-width: 100% !important;
+    box-sizing: border-box;
+    border: none;
+    margin: 0px auto !important;
+    padding: 0px;
+    clear: both;
+    height: auto !important;
+    pointer-events: none;
+    border-radius: 4PX;
+  }
+
+  // .app_image {
+  //   display: none;
+  // }
+
+  /* 不处理 video.js 视频标签 */
+  /deep/ video:not(.vjs-tech),
+  iframe {
+    max-width: 100% !important;
+    height: auto !important;
+    border-radius: 4PX;
+  }
+
+  /deep/ .imagenote {
+    // 采编拖动缩放图片，会给图说带上 max-width
+    max-width: 100%;
+    // color: var(--adm-color-visited);
+  }
+
+  p {
+    font-size: inherit;
+    line-height: inherit;
+
+    border: none;
+    margin-top: 0;
+    letter-spacing: initial;
+    font-weight: 400;
+    text-align: justify;
+    word-break: break-word;
+    background-color: transparent !important;
+    text-indent: 0 !important;
+
+    img {
+      display: block;
+    }
+  }
+
+  [style*="font-family: trsFontFace"] {
+    font-family: inherit !important;
+  }
+
+  >p {
+    // color: @text_color;
+    overflow-y: hidden !important;
+
+    >strong {
+      font-weight: 700;
+    }
+  }
+
+  >p+p {
+    margin-top: @moduleMarginTop;
+  }
+
+  table {
+    margin: 10px 0;
+    border-collapse: collapse;
+    border-spacing: 0;
+    display: table;
+    text-align: center;
+    vertical-align: text-top;
+    line-height: 1.5;
+
+    td,
+    th {
+      padding: 5px 10px;
+      border: 1px solid black;
+    }
+
+    th {
+      border-top: 1px solid black;
+      background-color: black;
+    }
+
+    .ue-table-interlace-color-single {
+      background-color: black;
+    }
+
+    .ue-table-interlace-color-double {
+      background-color: black;
+    }
+
+    caption {
+      border: 1px dashed black;
+      border-bottom: 0;
+      padding: 3px;
+      text-align: center;
+    }
+
+    tr.firstRow {
+      th {
+        border-top-width: 2px;
+      }
+    }
+  }
 }
 </style>

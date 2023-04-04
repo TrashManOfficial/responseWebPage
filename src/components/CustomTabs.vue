@@ -57,6 +57,9 @@ const currentId = ref('')
 
 watch(() => state.currentChannelId, (value) => {
   currentId.value = value
+  if (!props.isPc) {
+    document.getElementById(currentId.value).scrollIntoView({ inline: "start" })
+  }
 })
 
 const setCurrentId = (id) => {
@@ -126,7 +129,7 @@ const switchShowModal = (close) => {
       <Bars3BottomRightIcon class="h-7 ml-2"></Bars3BottomRightIcon>
       <!-- <div :class="`font-trsFontFace text-xl px-1 break-keep`">
 
-          </div> -->
+            </div> -->
     </div>
     <div v-if="showModal" class="fixed left-0 h-[600px] w-full bg-white bottom-0 rounded-t-lg z-[120] p-3 shadow-xl"
       style="box-shadow: 0 -6px 6px #c1c1c1;">

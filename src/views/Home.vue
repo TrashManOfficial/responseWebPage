@@ -1,9 +1,14 @@
 <template>
+    <Head>
+    <title>{{'新快网_新中产的移动资讯友伴'}}</title>
+      <!-- <meta name="description" :content="ArticleDetail?.metaInfo?.shareDesc" />
+      <meta name="keywords" :content="ArticleDetail?.metaInfo?.keyWords" /> -->
+  </Head>
   <div class="w-full flex fixed top-0 bg-white h-20 items-center shadow-md z-50 justify-center"
     v-if="!tabIsVisible && isPc">
     <div class="w-[1500px] flex">
       <div class="w-3/4 flex items-center justify-between">
-        <img class="m-2 h-12" src="../assets/logo.png" alt="新快网logo">
+        <img class="m-2 h-12" src="../assets/logo.png" alt="新快网logo" @click="toHome">
         <CustomTabs ref="tabRef" class="justify-around" :isPc="isPc"></CustomTabs>
       </div>
       <div class="w-1/4 mx-2">
@@ -25,7 +30,7 @@
       </div>
       <div class="w-full h-full flex-1 flex items-center">
         <div class="h-16 w-full ph:h-14 ph:px-2 flex justify-center ph:justify-between ph:items-center ph:bg-primary">
-          <img class="hidden ph:flex ph:h-8" src="../assets/logo_m.png" alt="">
+          <img class="hidden ph:flex ph:h-8" src="../assets/logo_m.png" alt="" @click="toHome">
           <SearchBar @onSearch="onSearch" class="w-1/2 ph:w-[250px]">
           </SearchBar>
         </div>
@@ -68,6 +73,7 @@ import DropDownModal from '../components/DropDownModal.vue';
 import { useRoute, useRouter } from 'vue-router'
 import utils from '../utils'
 import { breakpointsTailwind, useBreakpoints, useElementVisibility } from '@vueuse/core'
+import { Head } from '@vueuse/head';
 import channelStore from '../store/channel';
 const startRenderList = ref(false)
 const breakpoints = useBreakpoints(breakpointsTailwind)
@@ -85,9 +91,16 @@ onMounted(() => {
   getChannels()
 })
 
+const toHome = () => {
+  const href = router.resolve({
+    path: '/home'
+  })
+  window.open(href.href, '_blank')
+}
+
 
 const getChannels = () => {
-  channelStore.dispatch('getChannel',query.id).then(() => {
+  channelStore.dispatch('getChannel', query.id).then(() => {
     getArticleList()
     const id = channelStore.state.channelListRaw.data.find(i => i.title == '专题').id
     channelStore.dispatch('getArticleList', id)

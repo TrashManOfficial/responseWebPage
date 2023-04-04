@@ -1,5 +1,6 @@
 import { createStore } from "vuex";
 import axiosReqres from "../axios";
+import utils from "../utils";
 
 const channelStore = createStore({
   state: {
@@ -257,10 +258,11 @@ const channelStore = createStore({
         : filterData;
       if (id) {
         const index = state.channelList.data.findIndex(i => i.id === id);
-        if (index !== -1 && index !== 2) {
-          // 如果找到了指定id的项，并且它不是第三项，则和第三项交换位置
-          [state.channelList.data[2], state.channelList.data[index]] = [state.channelList.data[index], state.channelList.data[2]];
-        }
+        state.channelList.data = utils.splitAndMergeArray(state.channelList.data,7,index)
+        // if (index !== -1 && index !== 2) {
+        //   // 如果找到了指定id的项，并且它不是第三项，则和第三项交换位置
+        //   [state.channelList.data[2], state.channelList.data[index]] = [state.channelList.data[index], state.channelList.data[2]];
+        // }
         state.currentChannelId = id;
         return
       }

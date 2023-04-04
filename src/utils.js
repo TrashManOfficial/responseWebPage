@@ -82,9 +82,33 @@ const jump = (data, router, flag) => {
   // }
 };
 
+function splitAndMergeArray(arr, len, index) {
+  // 按照指定长度将数组分成前半段和后半段
+  const firstHalf = arr.slice(0, len);
+  const secondHalf = arr.slice(len);
+
+  if (index < len) {
+    // 如果下标在前半段，则直接返回合并的数组
+    return firstHalf.concat(secondHalf);
+  } else {
+    // 如果下标在后半段，则交换前半段末尾和指定下标所在位置
+    const lastItem = firstHalf.pop();
+    const indexInSecondHalf = index - len;
+    if (indexInSecondHalf < secondHalf.length) {
+      secondHalf[indexInSecondHalf] = lastItem;
+    }
+    firstHalf.push(arr[index]);
+    return firstHalf.concat(secondHalf);
+  }
+}
+
+
+
+
 export default {
   getAssetsFile,
   timeFormat,
   jump,
   replaceImgPath,
+  splitAndMergeArray,
 };

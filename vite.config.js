@@ -1,8 +1,8 @@
 import { defineConfig } from "vite";
 import compressionBuild from "rollup-plugin-compression";
 import vue from "@vitejs/plugin-vue";
-import legacy from '@vitejs/plugin-legacy'
-import viteCompression from 'vite-plugin-compression'
+import legacy from "@vitejs/plugin-legacy";
+import viteCompression from "vite-plugin-compression";
 const option = {
   sourceName: `dist`,
   type: "zip",
@@ -12,12 +12,12 @@ const option = {
 export default defineConfig({
   base: "./",
   plugins: [
-    vue(), 
-    compressionBuild.default(option),
+    vue(),
+    // compressionBuild.default(option),
     viteCompression(),
     legacy({
-      targets: ['defaults','ie >= 11', 'chrome 52']
-    })
+      targets: ["defaults", "ie >= 11", "chrome 52"],
+    }),
   ],
   server: {
     // https: true,
