@@ -57,8 +57,13 @@ const router = createRouter({
   routes
 })
 
-// router.beforeEach((to, from, next) => {
-//   next()
-// })
+router.beforeEach((to, from, next) => {
+  //兼容旧版hash网址，统一重定向
+  if (to.href.includes('#')) {
+    next(to.fullPath.split('#')[1])
+    return
+  }
+  next()
+})
 
 export default router
