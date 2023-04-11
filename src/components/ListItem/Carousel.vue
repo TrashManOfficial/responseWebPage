@@ -60,7 +60,7 @@ const reg = new RegExp('_600')
   <div class="mx-auto rounded-lg" ref="carouselRef">
     <div class="relative">
       <!-- Carousel wrapper -->
-      <div class="overflow-hidden relative h-96 ph:h-64 rounded-lg bg-black">
+      <div class="overflow-hidden relative h-[440px] ph:h-64 rounded-lg bg-black">
         <div v-for="(item, index) in props.list"
           :class="`duration-700 ease-in-out ${currentVisibleImg === index ? '' : 'hidden'}`">
           <span
