@@ -16,7 +16,7 @@
     </div>
   </div>
   <div class="flex justify-center">
-    <div class="w-3/4 flex ph:w-full justify-center mt-3 ">
+    <div class="w-[1100px] flex ph:w-full justify-center mt-3 ">
       <ShareBar></ShareBar>
       <div class="max-w-[750px] pr-6 flex flex-col ph:w-full">
         <div>
@@ -77,7 +77,7 @@
           </div>
         </div>
       </div>
-      <div class=" w-3/12 ph:hidden pl-2">
+      <div class=" w-3/12 ph:hidden pl-3">
         <SideBar></SideBar>
       </div>
     </div>
@@ -305,9 +305,10 @@ const toHome = () => {
     border-radius: 4PX;
   }
 
-  /deep/ .imagenote {
+  .imagenote {
     // 采编拖动缩放图片，会给图说带上 max-width
     max-width: 100%;
+    text-align: center !important;
     // color: var(--adm-color-visited);
   }
 

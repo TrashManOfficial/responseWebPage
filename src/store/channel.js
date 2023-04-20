@@ -30,8 +30,28 @@ const channelStore = createStore({
     },
     articleListOver: false,
     carouselList: [],
+    recommendList:[],
   },
   actions: {
+    async getRecommendList({state,commit}) {
+      const id = state.channelList.data.filter(i => i.title === '首页')[0].id
+      const {data} = await axiosReqres(`/channels/getChildId?channelId=${id}`)
+      const channelId = data.data.find(i => i.title === '热闻推荐').id
+      const list = await axiosReqres("/articles", {
+        params: {
+          chnlId: channelId,
+          //区分不同web和客户端参数，固定
+          visibility: 1,
+          page: 0,
+          size: 3,
+        },
+      });
+      try {
+        commit("RECOMMEND",list.data.data)
+      } catch (err) {
+        throw err
+      }
+    },
     async getCommentList({ state, commit }, id) {
       const list = await axiosReqres(
         // `/fundapis/comment/api/comments/article/191165/exemption`,
@@ -209,6 +229,9 @@ const channelStore = createStore({
     },
   },
   mutations: {
+    RECOMMEND: (state,data) => {
+      state.recommendList = data
+    },
     COMMENT: (state, data) => {
       state.commentList = data.data.data;
     },

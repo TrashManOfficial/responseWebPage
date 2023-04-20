@@ -39,6 +39,10 @@ const jump = (data, router, flag) => {
     window.open(metaInfo.linkDoc, "_blank");
     return;
   }
+  if (metaInfo.docType === 4) {
+    window.open(metaInfo.linkDoc, "_blank");
+    return;
+  }
   if (metaInfo.docType === 3) {
     path = "special";
     // const groupid = data.metaInfo.specialDoc.groups[0].groupId;
