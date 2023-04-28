@@ -320,7 +320,7 @@ const toHome = () => {
     margin-top: 0;
     letter-spacing: initial;
     font-weight: 400;
-    text-align: justify;
+    text-align: inherit;
     word-break: break-word;
     background-color: transparent !important;
     text-indent: 0 !important;
