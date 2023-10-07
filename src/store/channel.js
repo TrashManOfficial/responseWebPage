@@ -33,6 +33,9 @@ const channelStore = createStore({
     recommendList:[],
   },
   actions: {
+    async postReadCount({state},id) {
+      const data = await axiosReqres.post(`/fundapis/prise/api/read/${id}`,{},{baseURL: ''})
+    },
     async getRecommendList({state,commit}) {
       const id = state.channelList.data.filter(i => i.title === '首页')[0].id
       const {data} = await axiosReqres(`/channels/getChildId?channelId=${id}`)

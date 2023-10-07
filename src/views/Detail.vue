@@ -193,6 +193,7 @@ getChannels()
 const getArticleDetail = () => {
   channelStore.dispatch('getArticleDetails', query.id).then(() => {
     handleArticle(channelStore.state.articleDetail)
+    readCount()
   })
   channelStore.dispatch('getCommentList', query.id).then(() => {
     commentList.value = channelStore.state.commentList
@@ -241,6 +242,12 @@ const handleArticle = (data) => {
   }
 
 
+
+}
+
+const readCount = () => {
+  const id = query.id
+  channelStore.dispatch('postReadCount',id)
 }
 
 const toHome = () => {

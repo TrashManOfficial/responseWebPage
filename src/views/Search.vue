@@ -92,7 +92,6 @@ const getChannels = () => {
     // getCarousel(channelStore.state.currentChannelId)
     const id = channelStore.state.channelListRaw.data.find(i => i.title == '专题').id
     channelStore.dispatch('getArticleList', id)
-    startRenderList.value = true
   })
 }
 const getArticleList = () => {
